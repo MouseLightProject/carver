@@ -19,19 +19,28 @@ if __name__ == '__main__':
     epsball = 500
 
     import importlib
-    reload(util)
-    reload(improc)
+
+    importlib.reload(util)
+    importlib.reload(improc)
 
     params = util.readParameterFile(parameterfile="./calculated_parameters.jl")
     nm, edges, R, offset, scale = util.readSWC(scale=1.0/1000)
     xyz = util.um2pix(nm,params['A']).T
-    # upsample xyz to
-    sp = 5
-    xyzup = util.upsampleSWC(xyz, edges, sp)
+    # # upsample xyz to
+    # sp = 5
+    # xyzup = util.upsampleSWC(xyz, edges, sp)
+    if False:
+        octpath, xres = improc.xyz2oct(xyz,params)
+    else:
+        params_p1=params.copy()
+        params_p1["nlevels"]=params_p1["nlevels"]+1
+        params_p1["leafshape"]=params_p1["leafshape"]/2
+        octpath, xres = improc.xyz2oct(xyz,params_p1)
 
-    octpath, xres = improc.xyz2oct(xyz,params)
-    # find bounding box that is rounded to octree format
     octpath_cover = np.unique(octpath, axis=0)
+    octpath_dilated = improc.dilateOct(octpath_cover)
+
+    # find bounding box that is rounded to octree format
     # dilate octree with 1
     octpath_dilated = improc.dilateOct(octpath_cover)
     # bounding box
