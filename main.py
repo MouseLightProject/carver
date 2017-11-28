@@ -19,12 +19,12 @@ if __name__ == '__main__':
     epsball = 500
 
     import importlib
-    importlib.reload(util)
-    importlib.reload(improc)
+    reload(util)
+    reload(improc)
 
-    params = util.readParameterFile(parameterfile="/nrs/mouselight/SAMPLES/2017-06-10/calculated_parameters.jl")
-    um, edges, R, offset, scale = util.readSWC(scale=1/1000)
-    xyz = util.um2pix(um,params['A']).T
+    params = util.readParameterFile(parameterfile="./calculated_parameters.jl")
+    nm, edges, R, offset, scale = util.readSWC(scale=1.0/1000)
+    xyz = util.um2pix(nm,params['A']).T
     # upsample xyz to
     sp = 5
     xyzup = util.upsampleSWC(xyz, edges, sp)
