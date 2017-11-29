@@ -2,7 +2,10 @@ import util
 import numpy as np
 import matplotlib.pyplot as plt
 import improc
+import os
+from skimage import io
 from scipy.spatial import distance as dist
+import h5py
 
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -18,8 +21,10 @@ def crop_from_render():
 
 if __name__ == '__main__':
 
-    epsball = 500
+    # oct in [1...8]
+    # grid in [0...(2**depth-1)]
 
+    epsball = 500
     import importlib
 
     importlib.reload(util)
@@ -34,18 +39,89 @@ if __name__ == '__main__':
     if False:
         octpath, xres = improc.xyz2oct(xyzup,params)
     else:
+        depthextend = 1
         params_p1=params.copy()
-        params_p1["nlevels"]=params_p1["nlevels"]+1
-        params_p1["leafshape"]=params_p1["leafshape"]/2
+        params_p1["nlevels"]=params_p1["nlevels"]+depthextend
+        params_p1["leafshape"]=params_p1["leafshape"]/(2**depthextend)
         octpath, xres = improc.xyz2oct(xyzup,params_p1)
 
+    depthBase = params["nlevels"].__int__()
     octpath_cover = np.unique(octpath, axis=0)
-    octpath_dilated = improc.dilateOct(octpath_cover)
-    octpath_dilated = np.unique(octpath_dilated, axis=0)
+
+    octpath_dilated,gridlist = improc.dilateOct(octpath_cover)
+    gridlist_cover = improc.oct2grid_list(octpath_cover)
+
+    # reference shift
+    octpath_cover_base = octpath_cover.copy()
+    octpath_cover_base[:,depthBase::]=1
+    gridlist_cover_base = improc.oct2grid_list(octpath_cover_base)
+
+
+
+    gridsize = np.max(gridlist, axis=0) - np.min(gridlist, axis=0) +1
+    outvolumeSize = gridsize*params_p1["leafshape"]
+    chunksize = params_p1["leafshape"].astype(int)
+
+    # f = h5py.File("test.hdf5", "w")
+    # dset = f.create_dataset("volume", outvolumeSize, chunks=tuple(chunksize))
+    # f.__delitem__("volume")
+
+    mylist = improc.chunklist(octpath_dilated,depthBase.__int__())
+    tileids = list(mylist.keys())
+
+
+    for file in os.listdir("/mydir"):
+        if file.endswith(".txt"):
+            print(os.path.join("/mydir", file))
+
+
+    datafold = '/Volumes/mouselight/SAMPLES/2017-06-10'
+    for idTile in tileids:
+        tilename = '/'.join(a for a in idTile)
+        tilepath = datafold+'/'+tilename
+        for file in os.listdir(tilepath):
+            if file.endswith(".tif"):
+                tilefiles = os.path.join(tilepath, file)
+                # load tile
+                im = io.imread(tilefiles) # zyx order
+                im2=np.swapaxes(im, 0, 2)
+
+                # crops
+                mylist[idTile]
+
+                fig = plt.figure()
+                plt.imshow(np.max(im2,axis=2))
+
+                # xyztest = xres[np.where(all(octpath == octpath[0, :], axis=1))[0], :]
+                # plt.scatter(xyztest[:, 0], xyztest[:, 1], c='r')
+
+
+
+
+
+
+                # '/'.join(a + b for a, b in zip(s[::1], s[1::1]))
+
+
+    # -> search upto depth to find unique tiles
+    baselist = octpath_dilated[:, :depthBase.__int__()]
+    basetiles = np.unique(baselist, axis=0)
+
+
+
+
+
+    listTiles(octpath_dilated,params["nlevels"].__int__())
+
+
+
+
+    # find bbox for neuron, find envelop
+    BBox = findBBox(octpath_dilated)
+
+
 
     # TODO:
-    # -> search upto depth to find unique tiles
-    # -> for each tile, find bbox of crop sub-octtree
     # -> appen to list
 
 
