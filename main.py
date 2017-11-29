@@ -43,8 +43,14 @@ if __name__ == '__main__':
     octpath_dilated = improc.dilateOct(octpath_cover)
     octpath_dilated = np.unique(octpath_dilated, axis=0)
 
-    # fd = dist.cdist(octpath_cover, octpath_dilated)
+    # TODO:
+    # -> search upto depth to find unique tiles
+    # -> for each tile, find bbox of crop sub-octtree
+    # -> appen to list
 
+
+
+    # fd = dist.cdist(octpath_cover, octpath_dilated)
     # find bounding box that is rounded to octree format
     # dilate octree with 1
     octpath_dilated = improc.dilateOct(octpath_cover)
