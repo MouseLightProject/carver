@@ -2,6 +2,9 @@ import numpy as np
 import math
 import re
 from collections import defaultdict
+import os
+from skimage import io
+
 
 def boundingbox(xyz):
     # finds the bounding box of point cloud
@@ -61,6 +64,8 @@ def oct2grid_list(octpath):
 
 def oct2grid(oct_idx):
     # (inverse logic as grid2oct)
+    if oct_idx.ndim == 1:
+        oct_idx = oct_idx.reshape(1,len(oct_idx))
     numlist = oct_idx.shape[0]
     depth = oct_idx.shape[1]
     binarray = 2 ** (np.array(range(depth, 0, -1)) - 1)
@@ -74,7 +79,19 @@ def oct2grid(oct_idx):
             idxarray[0, id] = int(base2[2])
         gridarray[il,:] = np.sum(idxarray * binarray, axis=1)
     # broadcast binarray
-    return(gridarray)
+    return(np.asarray(gridarray,dtype=int))
+
+def loadTiles(tilepath,ext=".tif"):
+    IM=[]
+    for file in os.listdir(tilepath):
+        if file.endswith(ext):
+            tilefiles = os.path.join(tilepath, file)
+            # load tile
+            im = io.imread(tilefiles)  # zyx order
+            IM.append(np.swapaxes(im, 0, 2))
+
+    return np.stack(IM,axis=3)
+
 
 def grid2oct(xyz,depth):
     # order flip to pre (inverse logic as oct2grid)
