@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="d4bcb4d1-3558-4617-b89e-db0c36009a33" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/2017-06-10_G-029_Consensus.swc" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/calculated_parameters.jl" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/navigator.iml" afterPath="$PROJECT_DIR$/.idea/navigator.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/improc.py" afterPath="$PROJECT_DIR$/improc.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <splitter split-orientation="horizontal" split-proportion="0.5253304">
+      <split-first>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
+          <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/main.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="286">
+                  <caret line="21" column="0" lean-forward="true" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file leaf-file-name="improc.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/improc.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="572">
+                  <caret line="26" column="26" lean-forward="false" selection-start-line="26" selection-start-column="26" selection-end-line="26" selection-end-column="26" />
+                  <folding>
+                    <element signature="e#0#18#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="util.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/util.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="846">
+                  <caret line="108" column="0" lean-forward="false" selection-start-line="108" selection-start-column="0" selection-end-line="108" selection-end-column="0" />
+                  <folding>
+                    <element signature="e#1087#1155#0" expanded="false" />
+                    <marker date="1513093922348" expanded="true" signature="3407:4176" ph="..." />
+                    <marker date="1513093922348" expanded="true" signature="3510:3968" ph="..." />
+                    <marker date="1513093922348" expanded="true" signature="3530:3968" ph="..." />
+                    <marker date="1513093922348" expanded="true" signature="3622:3872" ph="..." />
+                    <marker date="1513093922348" expanded="true" signature="3890:3968" ph="..." />
+                    <marker date="1513093922348" expanded="true" signature="4208:4635" ph="..." />
+                    <marker date="1513093922348" expanded="true" signature="4272:4600" ph="..." />
+                    <marker date="1513093922348" expanded="true" signature="4325:4600" ph="..." />
+                    <marker date="1513093922348" expanded="true" signature="4655:4898" ph="..." />
+                    <marker date="1513093922348" expanded="true" signature="4660:4824" ph="..." />
+                    <marker date="1513093922348" expanded="true" signature="4918:4944" ph="..." />
+                    <marker date="1513093922348" expanded="true" signature="4973:5150" ph="..." />
+                    <marker date="1513093922348" expanded="true" signature="5184:5272" ph="..." />
+                    <marker date="1513093922348" expanded="true" signature="5291:5338" ph="..." />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>parts[0].strip()</find>
+      <find>xyz2oct</find>
+      <find>xyz2opt</find>
+      <find>join</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>keyval</replace>
+    </replaceStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/util.py" />
+        <option value="$PROJECT_DIR$/improc.py" />
+        <option value="$PROJECT_DIR$/main.py" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="81" />
+    <option name="y" value="24" />
+    <option name="width" value="3357" />
+    <option name="height" value="1408" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scratches" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="navigator" type="b2602c69:ProjectViewProjectNode" />
+              <item name="navigator" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$USER_HOME$/anaconda3/bin/python3.6" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.main">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="navigator" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
+    <recent_temporary>
+      <list size="1">
+        <item index="0" class="java.lang.String" itemvalue="Python.main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
+    <configuration>$USER_HOME$/.subversion</configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d4bcb4d1-3558-4617-b89e-db0c36009a33" name="Default" comment="" />
+      <created>1505401318671</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1505401318671</updated>
+    </task>
+    <task id="LOCAL-00001" summary="added readers for swc and transform&#10;added nano/micro to voxel conversion">
+      <created>1505509983671</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1505509983671</updated>
+    </task>
+    <task id="LOCAL-00002" summary="added improc and util functions. conversion between um&lt;-&gt;pix&lt;-&gt;octtree and octtree dilation function">
+      <created>1506540923006</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1506540923006</updated>
+    </task>
+    <task id="LOCAL-00003" summary="added improc and util functions. conversion between um&lt;-&gt;pix&lt;-&gt;octtree and octtree dilation function">
+      <created>1513093909162</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1513093909162</updated>
+    </task>
+    <task id="LOCAL-00004" summary="added improc and util functions. conversion between um&lt;-&gt;pix&lt;-&gt;octtree and octtree dilation function">
+      <created>1513094192175</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1513094192175</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="81" y="-4" width="3359" height="1444" extended-state="6" />
+    <layout>
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18168032" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1831761" sideWeight="0.5098575" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32861635" sideWeight="0.49807137" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19623901" sideWeight="0.49893844" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20776464" sideWeight="0.4882571" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24992417" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294025" sideWeight="0.49772522" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20897786" sideWeight="0.49014255" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.6724351" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/../../../../.." />
+    </ignored-roots>
+    <MESSAGE value="added readers for swc and transform&#10;added nano/micro to voxel conversion" />
+    <MESSAGE value="added improc and util functions. conversion between um&lt;-&gt;pix&lt;-&gt;octtree and octtree dilation function" />
+    <option name="LAST_COMMIT_MESSAGE" value="added improc and util functions. conversion between um&lt;-&gt;pix&lt;-&gt;octtree and octtree dilation function" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+      <option name="time" value="17" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1848">
+          <caret line="100" column="20" lean-forward="false" selection-start-line="100" selection-start-column="20" selection-end-line="100" selection-end-column="20" />
+          <folding>
+            <element signature="e#1087#1155#0" expanded="false" />
+            <marker date="1513093922348" expanded="true" signature="3407:4176" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3510:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3530:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3622:3872" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3890:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4208:4635" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4272:4600" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4325:4600" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4655:4898" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4660:4824" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4918:4944" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4973:5150" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="5184:5272" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="5291:5338" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/improc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="9" column="23" lean-forward="false" selection-start-line="9" selection-start-column="23" selection-end-line="9" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="440">
+          <caret line="25" column="31" lean-forward="false" selection-start-line="25" selection-start-column="31" selection-end-line="25" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#1087#1155#0" expanded="false" />
+            <marker date="1513093922348" expanded="true" signature="3407:4176" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3510:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3530:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3622:3872" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3890:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4208:4635" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4272:4600" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4325:4600" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4655:4898" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4660:4824" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4918:4944" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4973:5150" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="5184:5272" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="5291:5338" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="440">
+          <caret line="25" column="31" lean-forward="false" selection-start-line="25" selection-start-column="31" selection-end-line="25" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/improc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="9" column="23" lean-forward="false" selection-start-line="9" selection-start-column="23" selection-end-line="9" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1650">
+          <caret line="91" column="22" lean-forward="false" selection-start-line="91" selection-start-column="22" selection-end-line="91" selection-end-column="22" />
+          <folding>
+            <element signature="e#1087#1155#0" expanded="false" />
+            <marker date="1513093922348" expanded="true" signature="3407:4176" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3510:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3530:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3622:3872" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3890:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4208:4635" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4272:4600" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4325:4600" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4655:4898" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4660:4824" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4918:4944" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4973:5150" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="5184:5272" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="5291:5338" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="440">
+          <caret line="25" column="31" lean-forward="false" selection-start-line="25" selection-start-column="31" selection-end-line="25" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/improc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="9" column="23" lean-forward="true" selection-start-line="9" selection-start-column="23" selection-end-line="9" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="704">
+          <caret line="56" column="52" lean-forward="false" selection-start-line="56" selection-start-column="52" selection-end-line="56" selection-end-column="52" />
+          <folding>
+            <element signature="e#1087#1155#0" expanded="false" />
+            <marker date="1513093922348" expanded="true" signature="3407:4176" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3510:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3530:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3622:3872" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3890:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4208:4635" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4272:4600" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4325:4600" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4655:4898" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4660:4824" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4918:4944" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4973:5150" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="5184:5272" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="5291:5338" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34276">
+          <caret line="1595" column="0" lean-forward="false" selection-start-line="1595" selection-start-column="0" selection-end-line="1595" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/improc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="66">
+          <caret line="3" column="71" lean-forward="false" selection-start-line="3" selection-start-column="70" selection-end-line="3" selection-end-column="71" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="726">
+          <caret line="33" column="37" lean-forward="true" selection-start-line="33" selection-start-column="37" selection-end-line="33" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#1087#1155#0" expanded="false" />
+            <marker date="1513093922348" expanded="true" signature="3407:4176" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3510:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3530:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3622:3872" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3890:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4208:4635" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4272:4600" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4325:4600" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4655:4898" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4660:4824" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4918:4944" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4973:5150" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="5184:5272" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="5291:5338" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="550">
+          <caret line="29" column="4" lean-forward="false" selection-start-line="29" selection-start-column="4" selection-end-line="29" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/improc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="66">
+          <caret line="3" column="71" lean-forward="false" selection-start-line="3" selection-start-column="70" selection-end-line="3" selection-end-column="71" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="934">
+          <caret line="1595" column="0" lean-forward="false" selection-start-line="1595" selection-start-column="0" selection-end-line="1595" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/matplotlib/cbook.py" />
+    <entry file="file://$PROJECT_DIR$/util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="846">
+          <caret line="108" column="0" lean-forward="false" selection-start-line="108" selection-start-column="0" selection-end-line="108" selection-end-column="0" />
+          <folding>
+            <element signature="e#1087#1155#0" expanded="false" />
+            <marker date="1513093922348" expanded="true" signature="3407:4176" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3510:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3530:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3622:3872" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="3890:3968" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4208:4635" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4272:4600" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4325:4600" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4655:4898" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4660:4824" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4918:4944" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="4973:5150" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="5184:5272" ph="..." />
+            <marker date="1513093922348" expanded="true" signature="5291:5338" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/improc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="572">
+          <caret line="26" column="26" lean-forward="false" selection-start-line="26" selection-start-column="26" selection-end-line="26" selection-end-column="26" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="21" column="0" lean-forward="true" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="hg4idea.settings">
+    <option name="CHECK_INCOMING_OUTGOING" value="true" />
+    <option name="RECENT_HG_ROOT_PATH" value="$PROJECT_DIR$/../../../../.." />
+  </component>
+</project>
