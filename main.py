@@ -69,6 +69,51 @@ if __name__ == '__main__':
     plt.imshow(imp)
     xyztest = xres[np.where(all(octpath == octpath[0, :], axis=1))[0], :]
     plt.scatter(xyztest[:,0],xyztest[:,1],c='r')
+
+    # # load tile
+    # kk=0
+    # sample = '/nrs/mouselight/SAMPLES/2017-06-10/'
+    # tif0 = sample+'/'.join(np.str(int(a)) for a in octpath[kk])+'/default.0.tif'
+    #
+    # im = io.imread(tif0)
+    # imp = np.max(im, axis=0)
+    #
+    # ik=0
+    # loc = np.asarray(xres[0:2,:],dtype=np.int)
+    # locupdated = improc.snapLoc(im,loc)
+    #
+    # frag_x = locupdated[:,0]
+    # frag_y = locupdated[:,1]
+    # frag_z = locupdated[:,2]
+    #
+    # # frag_x = loc[:,0]
+    # # frag_y = loc[:,1]
+    # # frag_z = loc[:,2]
+    #
+    # fig = plt.figure()
+    # ax1 = fig.add_subplot(121)
+    # ax2 = fig.add_subplot(122, sharex=ax1)
+    # ax1.imshow(imp)
+    # plt.hold(True)
+    # ax1.plot(frag_x,frag_y,'r')
+    # ax2.imshow(np.max(im[np.int(frag_z[0]):np.int(frag_z[1])],axis=0))
+    # plt.hold(True)
+    # ax2.plot(frag_x,frag_y,'r')
+    #
+    #
+    #
+    #
+    #
+    # # find bounding box that is rounded to octree format
+    # octpath_cover = np.unique(octpath, axis=0)
+    # # dilate octree with 1
+    # octpath_dilated = improc.dilateOct(octpath_cover)
+    # # bounding box
+    # gridxyz=improc.oct2grid(octpath_dilated)
+    # bbox = np.stack((np.min(gridxyz,axis=0),np.max(gridxyz,axis=0)),axis=0)
+    #
+    # xyztest = xres[np.where(np.all(octpath == octpath[0, :], axis=1))[0], :]
+    # aha = np.asarray(np.round(xyztest[1])[::-1],np.int)
     ##
     # fig = plt.figure()
     # ax = fig.add_subplot(111, projection='3d')
