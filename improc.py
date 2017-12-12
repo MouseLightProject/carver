@@ -101,15 +101,19 @@ def dilateOct(octpath,width=1):
         # for every path, there are 26 neighbors
         alltiles.append(xyz[None,:]+ixyz)
 
-    alltiles = np.concatenate(alltiles, 0)
+    if len(alltiles) == 1:
+        alltiles = np.squeeze(alltiles[0])
+    else:
+        alltiles = np.squeeze(np.concatenate(alltiles, axis=1))
     # delete any out of bound tiles
-    deletethese = np.any(np.logical_and(alltiles < 1, alltiles > 8), axis=1)
+    deletethese = np.any(np.logical_or(alltiles < 0, alltiles > 2**depth-1), axis=1)
     alltiles = np.delete(alltiles,(np.where(deletethese)),axis=0)
+
     # unique entries
     alltiles = np.unique(alltiles,axis=0)
     # convert to octpaths
-    octlist = [grid2oct(tileid, depth) for tileid in alltiles]
-    octlist = np.concatenate(octlist, 0)
+    octlist = [grid2oct(tileid[None,:], depth) for tileid in alltiles]
+    octlist = np.concatenate(octlist, axis=0)
 
     return octlist
 

@@ -69,7 +69,7 @@ def readParameterFile(parameterfile = "/nrs/mouselight/SAMPLES/2017-06-10/calcul
     params['A'] = A
     return params
 
-def readSWC(swcfile='/groups/mousebrainmicro/mousebrainmicro/cluster/Tracings/2017-06-10_G-029_Consensus.swc',scale=1):
+def readSWC(swcfile='./2017-06-10_G-029_Consensus.swc',scale=1.0):
     swcline=[]
     offset = np.zeros((1,3))
     offsetkey = 'OFFSET'
