@@ -4,8 +4,23 @@ def boundingbox(xyz):
     # finds the bounding box of point cloud
     return(np.round(np.array([np.min(xyz,axis=1),np.max(xyz,axis=1)])))
 
+def snapLoc(I,nploc,w=1):
+    # finds the location of maxima in a 3x3x3 neighborhood
+    nplocupdated = nploc.copy()
+    for iter,loc in enumerate(nploc):
+        Icrop = I[loc[0]-w:loc[0]+w+1,
+                  loc[1]-w:loc[1]+w+1,
+                  loc[2]-w:loc[2]+w+1]
+        i, j, k = np.unravel_index(Icrop.argmax(), Icrop.shape)
+        nplocupdated[iter] = loc+(np.array((i,j,k))-w)
+    return nplocupdated
+
+
 def xyz2oct(xyz,params):
     # converts xyz location to oct location
+    if len(xyz.shape) ==1:
+        xyz=xyz[None,:]
+
     nlevel = np.int(params['nlevels'])
     leafsize = params['leafshape']
     octpath = np.zeros((xyz.shape[0],nlevel))

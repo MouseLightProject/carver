@@ -118,7 +118,6 @@ def um2pix(um,A):
 
 def pix2um(xyz,A):
     return(np.dot(A,xyz))
-
 def pix2oct(xyz,dims,depth):
     # for a given xyz, box size and depth, returns the location int the patch and patch path
     res = dims/depth
