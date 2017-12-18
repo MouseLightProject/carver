@@ -79,8 +79,14 @@ def oct2grid_list(octpath):
 
 def oct2grid(oct_idx):
     # (inverse logic as grid2oct)
+    # oct_idx [1..8]
+    # grid [0 dims]
+    if np.any(oct_idx < 1) or np.any(oct_idx > 8):
+        raise Exception('oct out of bound')
+
     if oct_idx.ndim == 1:
         oct_idx = oct_idx.reshape(1,len(oct_idx))
+
     numlist = oct_idx.shape[0]
     depth = oct_idx.shape[1]
     binarray = 2 ** (np.array(range(depth, 0, -1)) - 1)
