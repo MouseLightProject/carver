@@ -1,0 +1,3 @@
+[submodule "morphsnakes"]
+	path = morphsnakes
+	url = https://github.com/pmneila/morphsnakes.git
