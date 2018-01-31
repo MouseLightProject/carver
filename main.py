@@ -46,13 +46,18 @@ if __name__ == '__main__':
     epsball = 500
 
     import importlib
-
     importlib.reload(util)
     importlib.reload(improc)
-    datafold = '/nrs/mouselight/SAMPLES/2017-09-11-2'
+
+    datafold = '/nrs/mouselight/SAMPLES/2017-11-17'
+    outfolder = './data'
+    swcname = '2017-11-17_G-017_Seg-1'
+
+    cropped_swc_file = os.path.join(outfolder,swcname+'_cropped.swc')
+    cropped_h5_file =  os.path.join(outfolder,swcname+'_cropped.h5')
 
     params = util.readParameterFile(parameterfile=datafold+"/calculated_parameters.jl")
-    um, edges, R, offset, scale = util.readSWC(swcfile='./2017-09-11_G-001_CA_base.swc',scale=1/1000)
+    um, edges, R, offset, scale = util.readSWC(swcfile=swcfile,scale=1/1000)
     # to fix the bug in Janelia Workstation
     um = um + params['vixsize']/scale/2
     xyz = util.um2pix(um,params['A']).T
@@ -89,12 +94,12 @@ if __name__ == '__main__':
 
     # save into cropped swc
     xyz_shifted = xyz-volReference
-    with open('test.swc','w') as fswc:
+    with open(cropped_swc_file,'w') as fswc:
         for iter,txt in enumerate(xyz_shifted):
-            fswc.write('{:d} {} {:.2f} {:.2f} {:.2f} {:.2f} {:d}\n'.format(edges[iter,0].__int__(),1,txt[0],txt[1],txt[2],1,edges[iter,1].__int__()))
+            fswc.write('{:.0f} {:.0f} {:.2f} {:.2f} {:.2f} {:.2f} {:.0f}\n'.format(edges[iter,0].__int__(),1,txt[0],txt[1],txt[2],1,edges[iter,1].__int__()))
 
     # write into h5
-    with h5py.File("test2.hdf5", "w") as f:
+    with h5py.File(cropped_h5_file, "w") as f:
         dset = f.create_dataset("volume", outVolumeSize, dtype='uint16', chunks=tuple(chunksize), compression="gzip", compression_opts=9)
         # crop chuncks from a tile read in tilelist
         for iter,idTile in enumerate(tileids):
@@ -129,4 +134,11 @@ if __name__ == '__main__':
 
         dset_swc = f.create_dataset("reconstruction", (xyz_shifted.shape[0],7), dtype='f')
         for iter, xyz_ in enumerate(xyz_shifted):
-            dset_swc[iter,:] = np.array([edges[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1, edges[iter, 1].__int__()])
+            dset_swc[iter,:] = np.array([edges[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges[iter, 1].__int__()])
+
+    # convert to tif
+    with h5py.File(cropped_h5_file, "r") as f:
+        dset = f['volume']
+        from skimage import io
+        io.imsave('./data/neuron_test.tif', np.swapaxes(dset,2,0))
+
