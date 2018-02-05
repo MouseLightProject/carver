@@ -1,5 +1,6 @@
 import numpy as np
 from collections import defaultdict
+import improc
 
 def readTransfrom(transformfile = "/nrs/mouselight/SAMPLES/2017-06-10/transform.txt"):
     # reads transform.txt file and parse it into a transform
@@ -69,20 +70,25 @@ def readParameterFile(parameterfile = "/nrs/mouselight/SAMPLES/2017-06-10/calcul
     params['A'] = A
     return params
 
+# ORIGINAL_SOURCE Janelia Workstation Large Volume Viewer
+# OFFSET 66310.961575 46976.514329 18608.718278
+# COLOR 1.000000,0.200000,0.200000
 def readSWC(swcfile='./2017-06-10_G-029_Consensus.swc',scale=1.0):
     swcline=[]
     offset = np.zeros((1,3))
     offsetkey = 'OFFSET'
+    header = []
     with open(swcfile, 'r') as f:
         while True:
             text = f.readline()
             if not text: break
             if text[0]=='#':
+                header.append(text)
                 # check offset
                 if text[2:len(offsetkey)+2]==offsetkey:
                     offset = np.array(text[len(offsetkey) + 3:-1].split(), dtype=np.float).reshape(1,3)
                 else:
-                    continue #header
+                    continue #skip
             else:
                 parts = text.split(' ')
                 swcline.append(parts)
@@ -92,7 +98,7 @@ def readSWC(swcfile='./2017-06-10_G-029_Consensus.swc',scale=1.0):
     xyz = lines[:,2:5]
     xyz = xyz + offset
     xyz = xyz/scale
-    return (xyz,edges,R,offset,scale)
+    return (xyz,edges,R,offset,scale,header)
 
 def upsampleSWC(xyz,edges,sp):
     xyzup = []

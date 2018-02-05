@@ -2,10 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d4bcb4d1-3558-4617-b89e-db0c36009a33" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/2017-06-10_G-029_Consensus.swc" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/morphsnakes" afterPath="$PROJECT_DIR$/morphsnakes" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cropper.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/morphsnakes" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/util.py" afterPath="$PROJECT_DIR$/util.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -15,27 +16,18 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.76169264">
+    <splitter split-orientation="horizontal" split-proportion="0.49154013">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
           <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/main.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="286">
-                  <caret line="61" column="39" lean-forward="true" selection-start-line="61" selection-start-column="39" selection-end-line="61" selection-end-column="39" />
+                <state relative-caret-position="396">
+                  <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
+                    <element signature="e#410#905#0" expanded="false" />
                   </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="README.rst" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/morphsnakes/README.rst">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1254">
-                  <caret line="57" column="73" lean-forward="false" selection-start-line="57" selection-start-column="73" selection-end-line="57" selection-end-column="73" />
-                  <folding />
                 </state>
               </provider>
             </entry>
@@ -47,7 +39,7 @@
           <file leaf-file-name="improc.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/improc.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1386">
+                <state relative-caret-position="0">
                   <caret line="68" column="17" lean-forward="false" selection-start-line="68" selection-start-column="17" selection-end-line="68" selection-end-column="17" />
                   <folding>
                     <element signature="e#0#18#0" expanded="true" />
@@ -56,26 +48,38 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="tests.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/morphsnakes/tests.py">
+          <file leaf-file-name="util.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/util.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="771">
-                  <caret line="64" column="0" lean-forward="false" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
+                <state relative-caret-position="1544">
+                  <caret line="141" column="0" lean-forward="false" selection-start-line="141" selection-start-column="0" selection-end-line="141" selection-end-column="0" />
                   <folding>
-                    <element signature="e#1#36#0" expanded="true" />
+                    <element signature="e#0#18#0" expanded="true" />
+                    <element signature="e#1101#1169#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="util.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/util.py">
+          <file leaf-file-name="cropper.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/cropper.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="118">
-                  <caret line="92" column="6" lean-forward="false" selection-start-line="92" selection-start-column="6" selection-end-line="92" selection-end-column="6" />
+                <state relative-caret-position="-412">
+                  <caret line="9" column="4" lean-forward="false" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="4" />
                   <folding>
-                    <element signature="e#1087#1155#0" expanded="false" />
+                    <element signature="e#0#13#0" expanded="true" />
+                    <element signature="e#2976#4082#0" expanded="false" />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/.gitignore">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="66">
+                  <caret line="3" column="0" lean-forward="true" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -103,6 +107,9 @@
       <find>2**</find>
       <find>-1</find>
       <find>- 1</find>
+      <find>datafold</find>
+      <find>epsball</find>
+      <find>xyzup</find>
     </findStrings>
     <replaceStrings>
       <replace>keyval</replace>
@@ -114,10 +121,13 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/util.py" />
         <option value="$PROJECT_DIR$/improc.py" />
+        <option value="$PROJECT_DIR$/util.py" />
+        <option value="$PROJECT_DIR$/cropper.py" />
         <option value="$PROJECT_DIR$/morphsnakes/tests.py" />
+        <option value="$PROJECT_DIR$/morphsnakes/morphsnakes.py" />
         <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -150,11 +160,6 @@
             <path>
               <item name="navigator" type="b2602c69:ProjectViewProjectNode" />
               <item name="navigator" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="navigator" type="b2602c69:ProjectViewProjectNode" />
-              <item name="navigator" type="462c0819:PsiDirectoryNode" />
-              <item name="data" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -267,14 +272,20 @@
       <option name="project" value="LOCAL" />
       <updated>1513783003098</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="precommit before segmentation merge, need to fix LVV bug that causes [-1 -1 0] shift. LVV-[1 1 0]=correct_voxel location, need to add a is_lvv_export condition in swc readers to fix it">
+      <created>1517438836031</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1517438836031</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="81" y="-4" width="3359" height="1444" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22171672" sideWeight="0.5298742" order="1" side_tool="true" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24992417" sideWeight="0.5298742" order="1" side_tool="true" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1831761" sideWeight="0.5098575" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32861635" sideWeight="0.49807137" order="4" side_tool="false" content_ui="tabs" />
@@ -282,7 +293,7 @@
       <window_info id="Python Console" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20776464" sideWeight="0.4850629" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24992417" sideWeight="0.49685535" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294025" sideWeight="0.49772522" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22171672" sideWeight="0.4701258" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24992417" sideWeight="0.4701258" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.6724351" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -305,35 +316,16 @@
     <MESSAGE value="added improc and util functions. conversion between um&lt;-&gt;pix&lt;-&gt;octtree and octtree dilation function" />
     <MESSAGE value="stable version&#10;added h5write functionality for data/recon&#10;fixed chunking and dilation, validated using fiji" />
     <MESSAGE value="stable version&#10;TODO: seperate snake part, mavi dependency on python2.7, will create a new repo" />
-    <option name="LAST_COMMIT_MESSAGE" value="stable version&#10;TODO: seperate snake part, mavi dependency on python2.7, will create a new repo" />
+    <MESSAGE value="precommit before segmentation merge, need to fix LVV bug that causes [-1 -1 0] shift. LVV-[1 1 0]=correct_voxel location, need to add a is_lvv_export condition in swc readers to fix it" />
+    <option name="LAST_COMMIT_MESSAGE" value="precommit before segmentation merge, need to fix LVV bug that causes [-1 -1 0] shift. LVV-[1 1 0]=correct_voxel location, need to add a is_lvv_export condition in swc readers to fix it" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>104</line>
-          <option name="timeStamp" value="20" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>101</line>
-          <option name="timeStamp" value="22" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/morphsnakes/tests.py</url>
-          <line>71</line>
-          <option name="timeStamp" value="26" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>95</line>
-          <option name="timeStamp" value="27" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>66</line>
-          <option name="timeStamp" value="28" />
+          <line>49</line>
+          <option name="timeStamp" value="29" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -343,7 +335,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="29" />
+      <option name="time" value="37" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -354,6 +346,7 @@
           <caret line="69" column="18" lean-forward="true" selection-start-line="69" selection-start-column="18" selection-end-line="69" selection-end-column="18" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#410#905#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -363,7 +356,8 @@
         <state relative-caret-position="1804">
           <caret line="98" column="36" lean-forward="false" selection-start-line="98" selection-start-column="33" selection-end-line="98" selection-end-column="36" />
           <folding>
-            <element signature="e#1087#1155#0" expanded="false" />
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#1101#1169#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -390,9 +384,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1408">
           <caret line="64" column="0" lean-forward="true" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
-          <folding>
-            <element signature="e#1#36#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -402,6 +394,7 @@
           <caret line="111" column="32" lean-forward="true" selection-start-line="111" selection-start-column="32" selection-end-line="111" selection-end-column="32" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#410#905#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -428,9 +421,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="990">
           <caret line="45" column="4" lean-forward="true" selection-start-line="45" selection-start-column="4" selection-end-line="45" selection-end-column="4" />
-          <folding>
-            <element signature="e#1#36#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -440,6 +431,7 @@
           <caret line="100" column="0" lean-forward="true" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#410#905#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -449,7 +441,8 @@
         <state relative-caret-position="1210">
           <caret line="71" column="53" lean-forward="true" selection-start-line="71" selection-start-column="12" selection-end-line="71" selection-end-column="53" />
           <folding>
-            <element signature="e#1087#1155#0" expanded="false" />
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#1101#1169#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -459,7 +452,8 @@
         <state relative-caret-position="1848">
           <caret line="100" column="20" lean-forward="false" selection-start-line="100" selection-start-column="20" selection-end-line="100" selection-end-column="20" />
           <folding>
-            <element signature="e#1087#1155#0" expanded="false" />
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#1101#1169#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -480,6 +474,7 @@
           <caret line="25" column="31" lean-forward="false" selection-start-line="25" selection-start-column="31" selection-end-line="25" selection-end-column="31" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#410#905#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -489,7 +484,8 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#1087#1155#0" expanded="false" />
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#1101#1169#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -500,6 +496,7 @@
           <caret line="25" column="31" lean-forward="false" selection-start-line="25" selection-start-column="31" selection-end-line="25" selection-end-column="31" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#410#905#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -519,7 +516,8 @@
         <state relative-caret-position="1650">
           <caret line="91" column="22" lean-forward="false" selection-start-line="91" selection-start-column="22" selection-end-line="91" selection-end-column="22" />
           <folding>
-            <element signature="e#1087#1155#0" expanded="false" />
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#1101#1169#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -530,6 +528,7 @@
           <caret line="25" column="31" lean-forward="false" selection-start-line="25" selection-start-column="31" selection-end-line="25" selection-end-column="31" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#410#905#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -549,7 +548,8 @@
         <state relative-caret-position="704">
           <caret line="56" column="52" lean-forward="false" selection-start-line="56" selection-start-column="52" selection-end-line="56" selection-end-column="52" />
           <folding>
-            <element signature="e#1087#1155#0" expanded="false" />
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#1101#1169#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -577,6 +577,7 @@
           <caret line="33" column="37" lean-forward="true" selection-start-line="33" selection-start-column="37" selection-end-line="33" selection-end-column="37" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#410#905#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -586,7 +587,8 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#1087#1155#0" expanded="false" />
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#1101#1169#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -597,6 +599,7 @@
           <caret line="29" column="4" lean-forward="false" selection-start-line="29" selection-start-column="4" selection-end-line="29" selection-end-column="4" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#410#905#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -628,35 +631,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/improc.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1386">
+        <state relative-caret-position="0">
           <caret line="68" column="17" lean-forward="false" selection-start-line="68" selection-start-column="17" selection-end-line="68" selection-end-column="17" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/morphsnakes/morphsnakes.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1122">
-          <caret line="12" column="70" lean-forward="true" selection-start-line="12" selection-start-column="70" selection-end-line="12" selection-end-column="70" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/morphsnakes/README.rst">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1254">
-          <caret line="57" column="73" lean-forward="false" selection-start-line="57" selection-start-column="73" selection-end-line="57" selection-end-column="73" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/morphsnakes/tests.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="771">
-          <caret line="64" column="0" lean-forward="false" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
-          <folding>
-            <element signature="e#1#36#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -671,21 +649,66 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/util.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="118">
-          <caret line="92" column="6" lean-forward="false" selection-start-line="92" selection-start-column="6" selection-end-line="92" selection-end-column="6" />
+        <state relative-caret-position="1544">
+          <caret line="141" column="0" lean-forward="false" selection-start-line="141" selection-start-column="0" selection-end-line="141" selection-end-column="0" />
           <folding>
-            <element signature="e#1087#1155#0" expanded="false" />
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#1101#1169#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/morphsnakes/README.rst">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1170">
+          <caret line="57" column="73" lean-forward="false" selection-start-line="57" selection-start-column="73" selection-end-line="57" selection-end-column="73" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/morphsnakes/morphsnakes.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="817">
+          <caret line="120" column="0" lean-forward="true" selection-start-line="120" selection-start-column="0" selection-end-line="120" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="61" column="39" lean-forward="true" selection-start-line="61" selection-start-column="39" selection-end-line="61" selection-end-column="39" />
+        <state relative-caret-position="396">
+          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#410#905#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/morphsnakes/tests.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="554">
+          <caret line="71" column="59" lean-forward="false" selection-start-line="71" selection-start-column="59" selection-end-line="71" selection-end-column="59" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cropper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-412">
+          <caret line="9" column="4" lean-forward="false" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="4" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#2976#4082#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="66">
+          <caret line="3" column="0" lean-forward="true" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
