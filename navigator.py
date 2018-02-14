@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+"""Command line interface for navigator."""
+
 import util
 import numpy as np
 import cropper
@@ -10,7 +13,9 @@ def sample_spherical(npoints, ndim=3):
     return vec
 
 def main(argv):
-
+    # 'python navigator.py -i/nrs/mouselight/SAMPLES/2017-11-17 -s /groups/mousebrainmicro/home/base/CODE/MOUSELIGHT/navigator/recon_repo/2017-11-17_G-017_Seg-3.swc -o /groups/mousebrainmicro/home/base/CODE/MOUSELIGHT/navigator/data/2017-11-17_G-017_Seg-3'
+    # JW octree depth
+    number_of_level = 3
     try:
         opts, args = getopt.getopt(argv,"hi:s:o:",["data_fold=","input_swc_file=","output_folder="])
     except getopt.GetoptError:
@@ -45,18 +50,17 @@ def main(argv):
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    output_swc_name = '{}-cropped.swc'.format(swc_name)
-    output_h5_name =  '{}-cropped.h5'.format(swc_name)
+    output_swc_name = '{}-carved.swc'.format(swc_name)
+    output_h5_name =  '{}-carved.h5'.format(swc_name)
     cropper.crop_from_render(data_fold,input_swc_file,output_folder,output_swc_name,output_h5_name)
 
     JW_output_folder = os.path.join(output_folder,'JW')
     if not os.path.exists(JW_output_folder):
         os.makedirs(JW_output_folder)
-    number_of_level = 3
     output_h5_file = os.path.join(output_folder,output_h5_name)
     converter = util.Convert2JW(output_h5_file,JW_output_folder,number_of_level)
     converter.convert2JW()
-    converter.mergeJW(number_of_level=3)
+    converter.mergeJW(number_of_level=number_of_level)
     converter.create_transform_file()
 
 if __name__ == "__main__":

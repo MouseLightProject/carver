@@ -34,7 +34,7 @@ def readTransfrom(transformfile = "/nrs/mouselight/SAMPLES/2017-06-10/transform.
                 np.fill_diagonal(A,A.diagonal()/(2**(num-1)))
     return A
 
-def readParameterFile(parameterfile = "/nrs/mouselight/SAMPLES/2017-06-10/calculated_parameters.jl"):
+def readParameterFile(parameterfile = ""):
     # reads calculated_parameters.txt file and parse it into a transform
     # const jobname = "ocJHfFH"
     # const nlevels = 6

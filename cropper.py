@@ -13,6 +13,7 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
 
     params = util.readParameterFile(parameterfile=data_fold+"/calculated_parameters.jl")
     um, edges, R, offset, scale, header = util.readSWC(swcfile=input_swc,scale=1/1000)
+
     # to fix the bug in Janelia Workstation
     um = um + params['vixsize']/scale/2
     xyz = util.um2pix(um,params['A']).T
