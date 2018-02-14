@@ -145,16 +145,32 @@ def traverseOct():
     # lets you to traverse octree
     return 0
 
+
 class Convert2JW(object):
     def __init__(self,h5file,experiment_folder,number_of_level=3):
-        self.number_of_level = number_of_level
-        self.h5file = h5file
-        self.experiment_folder= experiment_folder
         with h5py.File(h5file, "r") as f:
             volume = f["volume"]
-            output_dims = volume.shape
-            target_leaf_size = np.asarray(np.ceil(np.array(output_dims[:3]) / 2 ** number_of_level), np.int)
-            self.target_leaf_size = target_leaf_size # need to iter over leafs
+            self.h5_dims= np.array(volume.shape)
+            self.h5_chunk_size = np.array(volume.chunks)
+            if not number_of_level:
+                # estimate leaf size & depth
+                # use multiple of chunk size for leaf
+                self.target_leaf_size = self.h5_chunk_size[:3] * 8  # set target_leaf_size to a multiple of chunk size for efficiency
+                depths = np.arange(2, 7)[:,None]
+                self.output_dims = 2**depths[np.where(np.all(2**depths*self.target_leaf_size[None,:]>self.h5_dims[:3],axis=1))[0]].flatten()[0]*self.target_leaf_size
+                # depths = np.arange(2, 10)[:,None]
+                # self.output_dims = 2**depths[np.where(np.all(2 **depths*self.h5_chunk_size[:3][None,:]>self.h5_dims[:3],axis=1))[0]].flatten()[0]*self.h5_chunk_size[:3]
+                self.number_of_level = np.log2(self.output_dims[0]/self.target_leaf_size[0]).__int__()
+            else:
+                self.output_dims = self.h5_dims
+                self.number_of_level = number_of_level
+                self.target_leaf_size = np.asarray(np.ceil(np.array(self.output_dims[:3]) / 2 ** self.number_of_level),
+                                                   np.int)  # need to iter over leafs
+        self.h5file = h5file
+        self.experiment_folder = experiment_folder
+
+    def __str__(self):
+        return "{}\n{}\n{}\n{}\n{}".format(self.output_dims,self.number_of_level,self.target_leaf_size,self.h5file,self.experiment_folder)
 
     def convert2JW(self):
         h5file = self.h5file
@@ -164,14 +180,18 @@ class Convert2JW(object):
         with h5py.File(h5file, "r") as f:
             volume = f["volume"]
             output_dims = volume.shape
-            bit_multiplication_array = 2**np.arange(number_of_level)
+            bit_multiplication_array = 2**np.arange(3)
             #target_leaf_size = np.asarray(np.ceil(np.array(output_dims[:3]) / 2 ** number_of_level), np.int)
             padded_size = target_leaf_size*2**number_of_level
             range_values = [np.asarray(np.arange(0, padded_size[ii], target_leaf_size[ii]),dtype=np.int).tolist() for ii in range(3)]
+
             for ix,ref in enumerate(list(itertools.product(*range_values))):
                 bb_end = np.asarray(np.min((ref+target_leaf_size,np.array(output_dims[:3])),axis=0),dtype=np.int)
                 patch_ = volume[ref[0]:bb_end[0], ref[1]:bb_end[1], ref[2]:bb_end[2], :]
+                if ~np.any(patch_):
+                    continue
 
+                # '''if patch size is smaller than full volume size pad zeros'''
                 if np.any(bb_end-np.array(ref) < target_leaf_size):
                     # pad
                     patch = np.zeros(np.append(target_leaf_size,2),dtype=np.uint16)
@@ -179,9 +199,9 @@ class Convert2JW(object):
                 else:
                     patch = patch_
 
-                # if patch size is smaller than full volume size pad zeros
-                folder_inds = np.array(np.unravel_index(ix,([8,8,8])))
+                folder_inds = np.array(np.unravel_index(ix,([2**number_of_level for ii in range(3)])))
                 folder_inds = folder_inds + 1
+
                 patch_folder_path = []
                 for im in np.arange(number_of_level,0,-1):
                     bits = folder_inds>2**(im-1)
@@ -191,8 +211,8 @@ class Convert2JW(object):
 
                 # create folder
                 outfolder = os.path.join(experiment_folder,'/'.join(str(pp) for pp in patch_folder_path))
-                if ~np.any(patch):
-                    continue
+                # if ~np.any(patch):
+                #     continue
 
                 if not os.path.exists(outfolder):
                     os.makedirs(outfolder)
