@@ -21,8 +21,12 @@ def main(argv):
     with open(output_sh_file,'w') as fswc:
         for swc_file in consensus_swc_files:
             path, filename = os.path.split(swc_file)
-            mystr = 'python {} -i {} -s {} -o {}&\n'.format(function_path,sample_folder, swc_file,
-                                                              os.path.join(output_folder, filename.split('.')[0]))
-            fswc.write(mystr)
+
+            # check if there is transform file in target folder
+            if os.path.exists(os.path.join(output_folder, filename.split('.')[0],'JW','transform.txt')):
+                mystr = 'python {} -i {} -s {} -o {} > {} &\n'.format(function_path,sample_folder, swc_file,
+                                                                 os.path.join(output_folder, filename.split('.')[0]),
+                                                                 os.path.join(output_folder, filename.split('.')[0],'log.txt'))
+                fswc.write(mystr)
 
     os.system('chmod g+x '+output_sh_file)

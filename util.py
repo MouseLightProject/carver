@@ -4,6 +4,8 @@ import os
 from skimage import io
 import h5py
 from skimage.transform import resize
+import warnings
+
 
 from collections import defaultdict
 import improc
@@ -199,7 +201,7 @@ class Convert2JW(object):
                 else:
                     patch = patch_
 
-                folder_inds = np.array(np.unravel_index(ix,([2**number_of_level for ii in range(3)])))
+                folder_inds = np.array(np.unravel_index(ix, ([2**number_of_level for ii in range(3)])))
                 folder_inds = folder_inds + 1
 
                 patch_folder_path = []
@@ -219,7 +221,9 @@ class Convert2JW(object):
                 print(outfolder)
                 for ichannel in range(2):
                     outfile = os.path.join(outfolder,'default.'+str(ichannel)+'.tif')
-                    io.imsave(outfile, np.swapaxes(patch[:,:,:,ichannel], 2, 0))
+                    with warnings.catch_warnings():
+                        warnings.simplefilter("ignore")
+                        io.imsave(outfile, np.swapaxes(patch[:, :, :, ichannel], 2, 0))
 
     def create_transform_file(self):
         experiment_folder = self.experiment_folder
@@ -244,7 +248,7 @@ class Convert2JW(object):
         experiment_folder = self.experiment_folder
         leaf_size = self.target_leaf_size
         values = ['{}/'.format(str(ii + 1)) for ii in range(8)]
-        for current_number_of_level in np.arange(number_of_level-1,-1,-1):
+        for current_number_of_level in np.arange(number_of_level-1, -1, -1):
             for iter_current_folder in list(itertools.product(values, repeat=current_number_of_level)):
                 my_lst_str = ''.join(map(str, iter_current_folder))
                 current_folder = os.path.join(experiment_folder, my_lst_str)
@@ -259,7 +263,7 @@ class Convert2JW(object):
                 current_path = os.path.join(current_folder,str(ioct+1))
                 current_file = current_path+'/default.{}.tif'.format(ichannel)
                 if os.path.exists(current_file):
-                    im_batch = np.swapaxes(io.imread(current_file),2,0)
+                    im_batch = np.swapaxes(io.imread(current_file), 2, 0)
                 else:
                     im_batch = np.zeros(leaf_shape)
                 im_channel.append(im_batch)
@@ -268,10 +272,13 @@ class Convert2JW(object):
             rt2 = np.concatenate(im_channel[2:4], axis=0)
             rt3 = np.concatenate(im_channel[4:6], axis=0)
             rt4 = np.concatenate(im_channel[6:8], axis=0)
-            rt5 = np.concatenate((rt1,rt2),axis=1)
-            rt6 = np.concatenate((rt3,rt4),axis=1)
-            merged_Im = np.concatenate((rt5,rt6),axis=2)
-            # down sample image by 2
-            down_image = resize(merged_Im,leaf_shape,preserve_range=True)
-            io.imsave(current_folder+'/default.{}.tif'.format(ichannel),np.asarray(np.swapaxes(down_image,2,0),np.uint16))
+            rt5 = np.concatenate((rt1, rt2), axis=1)
+            rt6 = np.concatenate((rt3, rt4), axis=1)
+            merged_Im = np.concatenate((rt5, rt6), axis=2)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                # down sample image by 2
+                down_image = resize(merged_Im, leaf_shape, preserve_range=True)
+                io.imsave(current_folder+'/default.{}.tif'.format(ichannel),
+                          np.asarray(np.swapaxes(down_image, 2, 0), np.uint16))
 
