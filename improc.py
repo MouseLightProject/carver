@@ -104,7 +104,9 @@ def oct2grid(oct_idx):
 
 def loadTiles(tilepath,ext=".tif"):
     IM=[]
-    for file in os.listdir(tilepath):
+    files = os.listdir(tilepath)
+    files.sort() # make sure that channels are loaded in order
+    for file in files:
         if file.endswith(ext):
             tilefiles = os.path.join(tilepath, file)
             # load tile

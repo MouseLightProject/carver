@@ -3,9 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d4bcb4d1-3558-4617-b89e-db0c36009a33" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/command_line_scripts.py" afterPath="$PROJECT_DIR$/command_line_scripts.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/navigator.py" afterPath="$PROJECT_DIR$/navigator.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/util.py" afterPath="$PROJECT_DIR$/util.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/improc.py" afterPath="$PROJECT_DIR$/improc.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -18,11 +16,11 @@
     <splitter split-orientation="horizontal" split-proportion="0.48634636">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
-          <file leaf-file-name="navigator.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="navigator.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/navigator.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="401">
-                  <caret line="58" column="0" lean-forward="false" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
+                <state relative-caret-position="242">
+                  <caret line="11" column="40" lean-forward="true" selection-start-line="11" selection-start-column="40" selection-end-line="11" selection-end-column="40" />
                   <folding>
                     <element signature="e#69#80#0" expanded="true" />
                   </folding>
@@ -30,11 +28,21 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="util.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="improc.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/improc.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="0">
+                  <caret line="0" column="6" lean-forward="false" selection-start-line="0" selection-start-column="6" selection-end-line="0" selection-end-column="6" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="util.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/util.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="4010">
-                  <caret line="279" column="0" lean-forward="false" selection-start-line="279" selection-start-column="0" selection-end-line="279" selection-end-column="0" />
+                <state relative-caret-position="556">
+                  <caret line="113" column="17" lean-forward="true" selection-start-line="113" selection-start-column="17" selection-end-line="113" selection-end-column="17" />
                   <folding>
                     <element signature="e#0#18#0" expanded="true" />
                   </folding>
@@ -45,8 +53,8 @@
           <file leaf-file-name="cropper.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/cropper.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="704">
-                  <caret line="38" column="12" lean-forward="false" selection-start-line="38" selection-start-column="4" selection-end-line="38" selection-end-column="12" />
+                <state relative-caret-position="220">
+                  <caret line="76" column="27" lean-forward="false" selection-start-line="76" selection-start-column="27" selection-end-line="76" selection-end-column="27" />
                   <folding />
                 </state>
               </provider>
@@ -56,19 +64,17 @@
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="util.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="util.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/util.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="506">
-                  <caret line="167" column="28" lean-forward="false" selection-start-line="167" selection-start-column="28" selection-end-line="167" selection-end-column="28" />
-                  <folding>
-                    <element signature="e#0#18#0" expanded="true" />
-                  </folding>
+                <state relative-caret-position="0">
+                  <caret line="0" column="6" lean-forward="false" selection-start-line="0" selection-start-column="6" selection-end-line="0" selection-end-column="6" />
+                  <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="command_line_scripts.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="command_line_scripts.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/command_line_scripts.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="352">
@@ -119,6 +125,7 @@
       <find>output_h5_file</find>
       <find>imsave</find>
       <find>resize</find>
+      <find>importl</find>
     </findStrings>
     <replaceStrings>
       <replace>keyval</replace>
@@ -133,7 +140,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/improc.py" />
         <option value="$PROJECT_DIR$/morphsnakes/tests.py" />
         <option value="$PROJECT_DIR$/morphsnakes/morphsnakes.py" />
         <option value="$PROJECT_DIR$/main.py" />
@@ -142,15 +148,16 @@
         <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/command_line_scripts.py" />
         <option value="$PROJECT_DIR$/navigator.py" />
+        <option value="$PROJECT_DIR$/improc.py" />
         <option value="$PROJECT_DIR$/util.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="81" />
-    <option name="y" value="-4" />
+    <option name="x" value="273" />
+    <option name="y" value="165" />
     <option name="width" value="3359" />
-    <option name="height" value="1444" />
+    <option name="height" value="1416" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -350,18 +357,25 @@
       <option name="project" value="LOCAL" />
       <updated>1518649838979</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="fixed depth level estimation bug to copy estimated depth to be used in merge method">
+      <created>1518717681006</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1518717681006</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="81" y="-4" width="3359" height="1444" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12253564" sideWeight="0.54332554" order="1" side_tool="true" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24810433" sideWeight="0.54332554" order="1" side_tool="true" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1831761" sideWeight="0.5098575" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19623901" sideWeight="0.4960692" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12253564" sideWeight="0.4566745" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24810433" sideWeight="0.4566745" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32861635" sideWeight="0.49807137" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24992417" sideWeight="0.49685535" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294025" sideWeight="0.49772522" order="1" side_tool="false" content_ui="tabs" />
@@ -397,7 +411,8 @@
     <MESSAGE value="cleaned up code, updated ignore list" />
     <MESSAGE value="added setup.py" />
     <MESSAGE value="optimized depth and output size estimation" />
-    <option name="LAST_COMMIT_MESSAGE" value="optimized depth and output size estimation" />
+    <MESSAGE value="fixed depth level estimation bug to copy estimated depth to be used in merge method" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed depth level estimation bug to copy estimated depth to be used in merge method" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -706,26 +721,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/improc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1170">
-          <caret line="68" column="17" lean-forward="false" selection-start-line="68" selection-start-column="17" selection-end-line="68" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/.PyCharmCE2017.2/system/python_stubs/540331937/posix.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="216">
           <caret line="853" column="4" lean-forward="true" selection-start-line="853" selection-start-column="4" selection-end-line="853" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cropper.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="704">
-          <caret line="38" column="12" lean-forward="false" selection-start-line="38" selection-start-column="4" selection-end-line="38" selection-end-column="12" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -746,22 +745,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/navigator.py">
+    <entry file="file://$PROJECT_DIR$/cropper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="401">
-          <caret line="58" column="0" lean-forward="false" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
-          <folding>
-            <element signature="e#69#80#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="220">
+          <caret line="76" column="27" lean-forward="false" selection-start-line="76" selection-start-column="27" selection-end-line="76" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/improc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="6" lean-forward="false" selection-start-line="0" selection-start-column="6" selection-end-line="0" selection-end-column="6" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/util.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4010">
-          <caret line="279" column="0" lean-forward="false" selection-start-line="279" selection-start-column="0" selection-end-line="279" selection-end-column="0" />
+        <state relative-caret-position="556">
+          <caret line="113" column="17" lean-forward="true" selection-start-line="113" selection-start-column="17" selection-end-line="113" selection-end-column="17" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/navigator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="11" column="40" lean-forward="true" selection-start-line="11" selection-start-column="40" selection-end-line="11" selection-end-column="40" />
+          <folding>
+            <element signature="e#69#80#0" expanded="true" />
           </folding>
         </state>
       </provider>
