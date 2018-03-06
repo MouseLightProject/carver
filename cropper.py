@@ -12,7 +12,7 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
     output_h5_file =  os.path.join(output_folder,output_h5_name)
 
     params = util.readParameterFile(parameterfile=data_fold+"/calculated_parameters.jl")
-    um, edges, R, offset, scale, header = util.readSWC(swcfile=input_swc,scale=1/1000)
+    um, edges, R, offset, scale, header = util.readSWC(swcfile=input_swc,scale=1)
 
     # to fix the bug in Janelia Workstation
     um = um + params['vixsize']/scale/2
@@ -55,7 +55,7 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
     xyz_shifted = xyz-volReference
     with open(output_swc_file,'w') as fswc:
         for iter,txt in enumerate(xyz_shifted):
-            fswc.write('{:.0f} {:.0f} {:.4f} {:.4f} {:.4f} {:.2f} {:.0f}\n'.format(edges[iter,0].__int__(),1,txt[0],txt[1],txt[2],1,edges[iter,1].__int__()))
+            fswc.write('{:.0f} {:.0f} {:.4f} {:.4f} {:.4f} {:.2f} {:.0f}\n'.format(edges[iter,0].__int__(),1,txt[0]-1,txt[1],txt[2],1,edges[iter,1].__int__()))
 
     # write into h5
     with h5py.File(output_h5_file, "w") as f:
