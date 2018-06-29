@@ -80,22 +80,23 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
             xyzTile = improc.oct2grid(ijkTile.reshape(1, len(ijkTile)))
             locTile = xyzTile * tileSize
             locShift = np.asarray(locTile - volReference,dtype=int).flatten()
-            im = improc.loadTiles(tilepath)
-            relativeDepth = depthFull - depthBase
+            if os.path.isdir(tilepath):
+                im = improc.loadTiles(tilepath)
+                relativeDepth = depthFull - depthBase
 
-            # patches in idTiled
-            for patch in tilelist[idTile]:
-                ijk = np.array(list(patch),dtype=int)
-                xyz = improc.oct2grid(ijk.reshape(1, len(ijk))) # in 0 base
+                # patches in idTiled
+                for patch in tilelist[idTile]:
+                    ijk = np.array(list(patch),dtype=int)
+                    xyz = improc.oct2grid(ijk.reshape(1, len(ijk))) # in 0 base
 
-                start = np.ndarray.flatten(xyz*leafSize)
-                end = np.ndarray.flatten(start + leafSize)
-                # print(start,end)
-                imBatch = im[start[0]:end[0],start[1]:end[1],start[2]:end[2],:]
+                    start = np.ndarray.flatten(xyz*leafSize)
+                    end = np.ndarray.flatten(start + leafSize)
+                    # print(start,end)
+                    imBatch = im[start[0]:end[0],start[1]:end[1],start[2]:end[2],:]
 
-                start = start + locShift
-                end = end + locShift
-                dset[start[0]:end[0],start[1]:end[1],start[2]:end[2],:] = imBatch
+                    start = start + locShift
+                    end = end + locShift
+                    dset[start[0]:end[0],start[1]:end[1],start[2]:end[2],:] = imBatch
 
 
     # # convert to tif

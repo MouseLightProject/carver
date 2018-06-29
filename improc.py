@@ -109,9 +109,10 @@ def loadTiles(tilepath,ext=".tif"):
     for file in files:
         if file.endswith(ext):
             tilefiles = os.path.join(tilepath, file)
-            # load tile
-            im = io.imread(tilefiles)  # zyx order
-            IM.append(np.swapaxes(im, 0, 2))
+            # load tile if exists
+            if os.path.isfile(tilefiles):
+                im = io.imread(tilefiles)  # zyx order
+                IM.append(np.swapaxes(im, 0, 2))
 
     return np.stack(IM,axis=3)
 
