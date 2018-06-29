@@ -46,7 +46,7 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
     gridlist_cover = improc.oct2grid(octpath_cover)
     octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_cover)
     #second pass (somewhat heuristic, helps with cropping later on)
-    octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_dilated)
+    # octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_dilated)
 
     tilelist = improc.chunklist(octpath_dilated,depthBase) #1..8
     tileids = list(tilelist.keys())
@@ -81,6 +81,7 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
             locTile = xyzTile * tileSize
             locShift = np.asarray(locTile - volReference,dtype=int).flatten()
             if os.path.isdir(tilepath):
+
                 im = improc.loadTiles(tilepath)
                 relativeDepth = depthFull - depthBase
 
@@ -98,8 +99,9 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
                     end = end + locShift
                     dset[start[0]:end[0],start[1]:end[1],start[2]:end[2],:] = imBatch
 
+                    # imgplot = plt.imshow(np.max(im[..., 0], axis=2))
 
-    # # convert to tif
+                    # # convert to tif
     # with h5py.File(output_h5_file, "r") as f:
     #     dset = f['volume']
     #     io.imsave(cropped_tif_file, np.swapaxes(dset[:,:,:,0],2,0))
