@@ -7,31 +7,35 @@ import h5py
 import skimage.io as io
 
 
-def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5_name):
+def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5_name,cast2vox=False):
     output_swc_file = os.path.join(output_folder,output_swc_name)
     output_h5_file =  os.path.join(output_folder,output_h5_name)
 
     params = util.readParameterFile(parameterfile=data_fold+"/calculated_parameters.jl")
-    nm, edges, R, offset, scale, header = util.readSWC(swcfile=input_swc,scale=1/1000)
+    scale = 1 # for voxel, use 1, for scope use 1/1000 to cast to nm
+    nm, edges, R, offset, scale, header = util.readSWC(swcfile=input_swc,scale=scale)
 
-    # to fix the bug in Janelia Workstation
-    nm = nm + params['vixsize']/scale/2
-    xyz = util.um2pix(nm,params['A']).T
-    # LVV BUG FIX: if source is JW, fix coordinates xyz_correct = xyz_LVV-[1 1 0]
-    # if any([re.findall('Janelia Workstation Large Volume Viewer', lines) for lines in header]):
-    #     xyz=xyz-[1,1,0]
+    if cast2vox:
+        # to fix the bug in Janelia Workstation
+        nm = nm + params['vixsize']/scale/2
+        xyz = util.um2pix(nm,params['A']).T
+        # LVV BUG FIX: if source is JW, fix coordinates xyz_correct = xyz_LVV-[1 1 0]
+        # if any([re.findall('Janelia Workstation Large Volume Viewer', lines) for lines in header]):
+        #     xyz=xyz-[1,1,0]
 
-    # upsample xyz to
-    sp = 5
-    xyzup = util.upsampleSWC(xyz, edges, sp)
-    if False:
-        octpath, xres = improc.xyz2oct(xyzup,params)
+        # upsample xyz to
+        xyz = util.upsampleSWC(xyz, edges, sp=5)
     else:
-        depthextend = 1
+        xyz = nm
+
+    if False:
+        octpath, xres = improc.xyz2oct(xyz,params)
+    else:
+        depthextend = 3
         params_p1=params.copy()
         params_p1["nlevels"]=params_p1["nlevels"]+depthextend
         params_p1["leafshape"]=params_p1["leafshape"]/(2**depthextend)
-        octpath, xres = improc.xyz2oct(xyzup,params_p1)
+        octpath, xres = improc.xyz2oct(xyz,params_p1)
 
     depthBase = params["nlevels"].astype(int)
     depthFull = params_p1["nlevels"].astype(int)
@@ -41,6 +45,8 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
     octpath_cover = np.unique(octpath, axis=0)
     gridlist_cover = improc.oct2grid(octpath_cover)
     octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_cover)
+    #second pass (somewhat heuristic, helps with cropping later on)
+    octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_dilated)
 
     tilelist = improc.chunklist(octpath_dilated,depthBase) #1..8
     tileids = list(tilelist.keys())

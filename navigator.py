@@ -52,13 +52,13 @@ def main(argv):
         print('navigator.py -i <data_folder> -s <swc_file> -o <output_folder>')
         sys.exit(2)
     data_fold='/nrs/mouselight/SAMPLES/2017-09-25-padded'
-    input_swc_file='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus/2017-09-25_G-001_consensus-carved.swc'
+    input_swc_file='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus/2017-09-25_G-001_consensus-proofed.swc'
     output_folder='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus'
 
 
-    data_fold = '/nrs/mouselight/SAMPLES/2018-03-09'
-    input_swc_file = '/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/forJohan.swc'
-    output_folder='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/forJohan'
+    # data_fold = '/nrs/mouselight/SAMPLES/2018-03-09'
+    # input_swc_file = '/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/forJohan.swc'
+    # output_folder='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/forJohan'
 
     for opt, arg in opts:
         print('opt:', opt,'arg:', arg)

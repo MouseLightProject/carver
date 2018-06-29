@@ -82,7 +82,7 @@ def oct2grid(oct_idx):
     # oct_idx [1..8]
     # grid [0 dims]
     if np.any(oct_idx < 1) or np.any(oct_idx > 8):
-        raise Exception('oct out of bound')
+        raise Exception('oct out of bound, oct \in [1...8]')
 
     if oct_idx.ndim == 1:
         oct_idx = oct_idx.reshape(1,len(oct_idx))
