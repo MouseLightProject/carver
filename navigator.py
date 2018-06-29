@@ -54,6 +54,12 @@ def main(argv):
     data_fold='/nrs/mouselight/SAMPLES/2017-09-25-padded'
     input_swc_file='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus/2017-09-25_G-001_consensus-carved.swc'
     output_folder='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus'
+
+
+    data_fold = '/nrs/mouselight/SAMPLES/2018-03-09'
+    input_swc_file = '/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/forJohan.swc'
+    output_folder='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/forJohan'
+
     for opt, arg in opts:
         print('opt:', opt,'arg:', arg)
         if opt == '-h':

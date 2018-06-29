@@ -12,11 +12,11 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
     output_h5_file =  os.path.join(output_folder,output_h5_name)
 
     params = util.readParameterFile(parameterfile=data_fold+"/calculated_parameters.jl")
-    um, edges, R, offset, scale, header = util.readSWC(swcfile=input_swc,scale=1)
+    nm, edges, R, offset, scale, header = util.readSWC(swcfile=input_swc,scale=1/1000)
 
     # to fix the bug in Janelia Workstation
-    um = um + params['vixsize']/scale/2
-    xyz = util.um2pix(um,params['A']).T
+    nm = nm + params['vixsize']/scale/2
+    xyz = util.um2pix(nm,params['A']).T
     # LVV BUG FIX: if source is JW, fix coordinates xyz_correct = xyz_LVV-[1 1 0]
     # if any([re.findall('Janelia Workstation Large Volume Viewer', lines) for lines in header]):
     #     xyz=xyz-[1,1,0]
@@ -27,7 +27,7 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
     if False:
         octpath, xres = improc.xyz2oct(xyzup,params)
     else:
-        depthextend = 3
+        depthextend = 1
         params_p1=params.copy()
         params_p1["nlevels"]=params_p1["nlevels"]+depthextend
         params_p1["leafshape"]=params_p1["leafshape"]/(2**depthextend)

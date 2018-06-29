@@ -109,6 +109,8 @@ def readSWC(swcfile='./2017-06-10_G-029_Consensus.swc',scale=1.0):
     return (xyz,edges,R,offset,scale,header)
 
 def upsampleSWC(xyz,edges,sp):
+    if xyz.shape[0]==1:
+        return xyz
     xyzup = []
     for i, j in np.asarray(edges - 1, np.int64):
         if j < 0:
