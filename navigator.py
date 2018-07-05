@@ -43,22 +43,32 @@ def fixKinksinAnnotation():
 
 
 def main(argv):
-    # 'python navigator.py -i/nrs/mouselight/SAMPLES/2017-11-17 -s /groups/mousebrainmicro/home/base/CODE/MOUSELIGHT/navigator/recon_repo/2017-11-17_G-017_Seg-3.swc -o /groups/mousebrainmicro/home/base/CODE/MOUSELIGHT/navigator/data/2017-11-17_G-017_Seg-3'
-    # JW octree depth
+    """ creates cropped volume and JW structure (for visualization) based on input render folder and swc file
+        USAGE: 'navigator.py -i <data_folder> -s <swc_file> -o <output_folder>'
+            -i <data_folder>: input data folder. Folders should follow octree format, e.g. <data_folder>/1/5/6
+            -s <swc_file>: input swc_file. 7 column conventional reconstruction format
+            -o <output_folder>: folder to create h5 and JW files
+            -h <number_of_level>: [OPTIONAL] sets how many chunks around trace will be used
+
+        NOTES:
+            oct in [1...8]
+            grid in [0...(2**depth-1)]
+
+
+
+    """
+
+    data_fold='/nrs/mouselight/SAMPLES/2017-09-25-padded'
+    input_swc_file='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus/2017-09-25_G-001_consensus-proofed.swc'
+    output_folder='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus'
     number_of_level = 3
+
     try:
         opts, args = getopt.getopt(argv,"hi:s:o:",["data_fold=","input_swc_file=","output_folder="])
     except getopt.GetoptError:
         print('navigator.py -i <data_folder> -s <swc_file> -o <output_folder>')
         sys.exit(2)
-    data_fold='/nrs/mouselight/SAMPLES/2017-09-25-padded'
-    input_swc_file='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus/2017-09-25_G-001_consensus-proofed.swc'
-    output_folder='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus'
 
-
-    # data_fold = '/nrs/mouselight/SAMPLES/2018-03-09'
-    # input_swc_file = '/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/forJohan.swc'
-    # output_folder='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/forJohan'
 
     for opt, arg in opts:
         print('opt:', opt,'arg:', arg)
@@ -72,13 +82,14 @@ def main(argv):
             input_swc_file = arg
         elif opt in ("-o", "--output_folder"):
             output_folder = arg
+        elif opt in ("-h", "--number_of_level"):
+            number_of_level = arg
 
     print('SWCFILE   :', input_swc_file)
     print('DATAFOLDER   :', data_fold)
     print('OUTPUT    :', output_folder)
+    print('NUMBEROFLEVEL    :', number_of_level)
 
-    # oct in [1...8]
-    # grid in [0...(2**depth-1)]
 
     inputfolder, swc_name_w_ext = os.path.split(input_swc_file)
     swc_name, _ = swc_name_w_ext.split(os.extsep)
