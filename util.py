@@ -86,7 +86,7 @@ def readSWCfolder(swcfolder, scale=1.0):
     curr_len = 0
     for iswc_name in swc_name_w_ext:
         nm_, edges_, R_, offset_, scale_, header_ = readSWC(swcfile=os.path.join(swcfolder, iswc_name), scale=scale)
-        edges_[0,1] = 0 # swc convention sets root to -1
+        edges_[0,1] = edges_[0,0] # swc convention sets root to -1
         edges_ += curr_len # append to previous recon
         curr_len += nm_.shape[0]
 
@@ -175,24 +175,96 @@ def traverseOct():
     return 0
 
 
+class dumper(object):
+    # dumps volumetric data into h5/zarr
+    def __init__(self, inputloc, outputFile, setting, tilelist=None):
+        self.inputLoc = inputloc
+        # check if dataset name is provided
+        splitted_name = outputFile.split(':')
+        if  len(splitted_name) == 1:
+            self.outputFile =  splitted_name[0]
+            self.datasetName =  "volume"
+        elif len(splitted_name) ==2:
+            self.outputFile =  splitted_name[0]
+            self.datasetName =  splitted_name[1]
+        else:
+            raise ValueError('output file name has more than one ":"', outputFile)
+        self.setting = setting
+        self.tilelist = tilelist
+        if tilelist:
+            self.tileids = list(tilelist.keys())
+
+    def write(self):
+        if self.setting['type'] is 'h5':
+            # write into h5
+            tileids = self.tileids
+            inputLoc = self.inputLoc
+            outputFile = self.outputFile
+            tilelist = self.tilelist
+            setting = self.setting
+            volSize = setting['volSize']
+            tileSize = setting['tileSize']
+            volReference = setting['volReference']
+            depthFull = setting['depthFull']
+            depthBase = setting['depthBase']
+            leafSize = setting['leafSize']
+
+            with h5py.File(outputFile, "w") as f:
+                # dset_swc = f.create_dataset("reconstruction", (xyz_shifted.shape[0], 7), dtype='f')
+                # for iter, xyz_ in enumerate(xyz_shifted):
+                #     dset_swc[iter, :] = np.array(
+                #         [edges[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges[iter, 1].__int__()])
+                dset = f.create_dataset(self.datasetName, volSize, dtype=setting['dtype'], chunks=setting['chunkSize'],
+                                        compression=setting['compression'], compression_opts=setting['compression_opts'])
+                # crop chuncks from a tile read in tilelist
+                for iter, idTile in enumerate(tileids):
+                    print('{} : {} out of {}'.format(idTile, iter, len(tileids)))
+                    tilename = '/'.join(a for a in idTile)
+                    tilepath = os.path.join(inputLoc, tilename)
+
+                    ijkTile = np.array(list(idTile), dtype=int)
+                    xyzTile = improc.oct2grid(ijkTile.reshape(1, len(ijkTile)))
+                    locTile = xyzTile * tileSize
+                    locShift = np.asarray(locTile - volReference, dtype=int).flatten()
+                    if os.path.isdir(tilepath):
+
+                        im = improc.loadTiles(tilepath)
+                        relativeDepth = depthFull - depthBase
+
+                        # patches in idTiled
+                        for patch in tilelist[idTile]:
+                            ijk = np.array(list(patch), dtype=int)
+                            xyz = improc.oct2grid(ijk.reshape(1, len(ijk)))  # in 0 base
+
+                            start = np.ndarray.flatten(xyz * leafSize)
+                            end = np.ndarray.flatten(start + leafSize)
+                            # print(start,end)
+                            imBatch = im[start[0]:end[0], start[1]:end[1], start[2]:end[2], :]
+
+                            start = start + locShift
+                            end = end + locShift
+                            dset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
+
+
+
 class Convert2JW(object):
-    def __init__(self,h5file,experiment_folder,number_of_level=3):
+    def __init__(self,h5file,experiment_folder,number_of_oct_level=None):
         with h5py.File(h5file, "r") as f:
             volume = f["volume"]
             self.h5_dims= np.array(volume.shape)
             self.h5_chunk_size = np.array(volume.chunks)
-            if not number_of_level:
+            if not number_of_oct_level:
                 # estimate leaf size & depth
                 # use multiple of chunk size for leaf
                 self.target_leaf_size = self.h5_chunk_size[:3] * 8  # set target_leaf_size to a multiple of chunk size for efficiency
                 depths = np.arange(2, 7)[:,None]
-                self.output_dims = 2**depths[np.where(np.all(2**depths*self.target_leaf_size[None,:]>self.h5_dims[:3],axis=1))[0]].flatten()[0]*self.target_leaf_size
+                self.output_dims = 2**depths[np.where(np.all(2**depths*self.target_leaf_size[None,:]>=self.h5_dims[:3],axis=1))[0]].flatten()[0]*self.target_leaf_size
                 # depths = np.arange(2, 10)[:,None]
                 # self.output_dims = 2**depths[np.where(np.all(2 **depths*self.h5_chunk_size[:3][None,:]>self.h5_dims[:3],axis=1))[0]].flatten()[0]*self.h5_chunk_size[:3]
-                self.number_of_level = np.log2(self.output_dims[0]/self.target_leaf_size[0]).__int__()
+                self.number_of_oct_level = np.log2(self.output_dims[0]/self.target_leaf_size[0]).__int__()
             else:
                 self.output_dims = self.h5_dims
-                self.number_of_level = number_of_level
+                self.number_of_oct_level = number_of_oct_level
                 self.target_leaf_size = np.asarray(np.ceil(np.array(self.output_dims[:3]) / 2 ** self.number_of_level),
                                                    np.int)  # need to iter over leafs
         self.h5file = h5file
@@ -203,15 +275,15 @@ class Convert2JW(object):
 
     def convert2JW(self):
         h5file = self.h5file
-        number_of_level = self.number_of_level
+        number_of_oct_level = self.number_of_oct_level
         experiment_folder = self.experiment_folder
         target_leaf_size = self.target_leaf_size
         with h5py.File(h5file, "r") as f:
             volume = f["volume"]
             output_dims = volume.shape
             bit_multiplication_array = 2**np.arange(3)
-            #target_leaf_size = np.asarray(np.ceil(np.array(output_dims[:3]) / 2 ** number_of_level), np.int)
-            padded_size = target_leaf_size*2**number_of_level
+            #target_leaf_size = np.asarray(np.ceil(np.array(output_dims[:3]) / 2 ** number_of_oct_level), np.int)
+            padded_size = target_leaf_size*2**number_of_oct_level
             range_values = [np.asarray(np.arange(0, padded_size[ii], target_leaf_size[ii]),dtype=np.int).tolist() for ii in range(3)]
 
             for ix,ref in enumerate(list(itertools.product(*range_values))):
@@ -228,11 +300,11 @@ class Convert2JW(object):
                 else:
                     patch = patch_
 
-                folder_inds = np.array(np.unravel_index(ix, ([2**number_of_level for ii in range(3)])))
+                folder_inds = np.array(np.unravel_index(ix, ([2**number_of_oct_level for ii in range(3)])))
                 folder_inds = folder_inds + 1
 
                 patch_folder_path = []
-                for im in np.arange(number_of_level,0,-1):
+                for im in np.arange(number_of_oct_level,0,-1):
                     bits = folder_inds>2**(im-1)
                     # bit 2 num
                     patch_folder_path.append(1+np.sum(bits*bit_multiplication_array))
@@ -254,17 +326,17 @@ class Convert2JW(object):
 
     def create_transform_file(self):
         experiment_folder = self.experiment_folder
-        number_of_level = self.number_of_level
+        number_of_oct_level = self.number_of_oct_level
         # create transform file
         transform_file = os.path.join(experiment_folder,'transform.txt')
         with open(transform_file, 'w') as ft:
             ft.write('ox: {:04.0f}\n'.format(0))
             ft.write('oy: {:04.0f}\n'.format(0))
             ft.write('oz: {:04.0f}\n'.format(0))
-            ft.write('sx: {:.0f}\n'.format(2**number_of_level*1000))
-            ft.write('sy: {:.0f}\n'.format(2**number_of_level*1000))
-            ft.write('sz: {:.0f}\n'.format(2**number_of_level*1000))
-            ft.write('nl: {:.0f}\n'.format(number_of_level+1))
+            ft.write('sx: {:.0f}\n'.format(2**number_of_oct_level*1000))
+            ft.write('sy: {:.0f}\n'.format(2**number_of_oct_level*1000))
+            ft.write('sz: {:.0f}\n'.format(2**number_of_oct_level*1000))
+            ft.write('nl: {:.0f}\n'.format(number_of_oct_level+1))
 
     def create_yml_file(self):
         yml_file = os.path.join(self.experiment_folder,'tilebase.cache.yml')

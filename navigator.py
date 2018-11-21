@@ -46,7 +46,7 @@ def main(argv):
     """ creates cropped volume and JW structure (for visualization) based on input render folder and swc file
         USAGE: 'navigator.py -i <data_folder> -s <swc_file> -o <output_folder>'
             -i <data_folder>: input data folder. Folders should follow octree format, e.g. <data_folder>/1/5/6
-            -s <swc_file>: input swc_file. 7 column conventional reconstruction format
+            -s <swc_file>: input swc_file or folder. for *swc files 7 column conventional reconstruction format.
             -o <output_folder>: folder to create h5 and JW files
             -h <number_of_level>: [OPTIONAL] sets how many chunks around trace will be used
 
@@ -54,13 +54,21 @@ def main(argv):
             oct in [1...8]
             grid in [0...(2**depth-1)]
 
+            we keep mouselight data in <root>/<neuron-id>/consensus/<tag>_consensus.swc format, e.g.:
+            /groups/mousebrainmicro/mousebrainmicro/shared_tracing/Finished_Neurons/2018-08-01/G-002/consensus/2018-08-01_G-002_consensus.swc
+            it is suggested to copy all consensus files for that sample into a single folder manually or with a script than pass input folder with "-f" argument.
+            For example:
+            cd /groups/mousebrainmicro/mousebrainmicro/shared_tracing/Finished_Neurons/2018-08-01
+            find . -name "*consensus*.swc" -exec cp {} /groups/mousebrainmicro/home/base/CODE/MOUSELIGHT/navigator/data/swc_recons/2018-08-01 \;
 
 
     """
 
-    data_fold='/nrs/mouselight/SAMPLES/2017-09-25-padded'
-    input_swc_file='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus/2017-09-25_G-001_consensus-proofed.swc'
-    output_folder='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus'
+    # data_fold='/nrs/mouselight/SAMPLES/2018-08-01-raw-rerender'
+    # ## input_swc_file='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus/2017-09-25_G-001_consensus-proofed.swc'
+    # input_swc_file='/groups/mousebrainmicro/home/base/CODE/MOUSELIGHT/navigator/data/swc_recons/2018-08-01'
+    # output_folder='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2018-08-01'
+
     number_of_level = 3
 
     try:
@@ -91,8 +99,8 @@ def main(argv):
     print('NUMBEROFLEVEL    :', number_of_level)
 
 
-    inputfolder, swc_name_w_ext = os.path.split(input_swc_file)
-    swc_name, _ = swc_name_w_ext.split(os.extsep)
+    rootfolder, swc_name = os.path.split(input_swc_file)
+    #swc_name, _ = swc_name_w_ext.split(os.extsep)
 
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
@@ -100,15 +108,18 @@ def main(argv):
     output_swc_name = '{}-carved.swc'.format(swc_name)
     output_h5_name =  '{}-carved.h5'.format(swc_name)
     JW_output_folder = os.path.join(output_folder,'JW')
+
     if not os.path.exists(JW_output_folder):
-        cropper.crop_from_render(data_fold, input_swc_file, output_folder, output_swc_name, output_h5_name)
+        scale = 1 / 1000  # for voxel, use 1, for scope use 1/1000 to cast to nm
+        cropper.crop_from_render(data_fold, input_swc_file, output_folder, output_swc_name, output_h5_name, scale)
+
     # shutil.rmtree(JW_output_folder)
     if not os.path.exists(JW_output_folder):
         os.makedirs(JW_output_folder)
         os.chmod(JW_output_folder, 0o770)
 
     output_h5_file = os.path.join(output_folder, output_h5_name)
-    converter = util.Convert2JW(output_h5_file, JW_output_folder, number_of_level=None)
+    converter = util.Convert2JW(output_h5_file, JW_output_folder, number_of_oct_level=None)
     converter.convert2JW()
     converter.mergeJW(number_of_level=converter.number_of_level)
     converter.create_transform_file()
