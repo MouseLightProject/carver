@@ -52,7 +52,8 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
     octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_cover)
     #### second pass (somewhat heuristic, helps with cropping later on)
     octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_dilated)
-    # octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_dilated)
+    octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_dilated)
+    octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_dilated)
 
     depthBase = params["nlevels"].astype(int)
     depthFull = params_p1["nlevels"].astype(int)
