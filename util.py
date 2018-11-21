@@ -78,6 +78,31 @@ def readParameterFile(parameterfile = ""):
     params['A'] = A
     return params
 
+def readSWCfolder(swcfolder, scale=1.0):
+    swc_name_w_ext = os.listdir(swcfolder)
+
+    nm, edges, R, offset, header = ([] for i in range(5))
+
+    curr_len = 0
+    for iswc_name in swc_name_w_ext:
+        nm_, edges_, R_, offset_, scale_, header_ = readSWC(swcfile=os.path.join(swcfolder, iswc_name), scale=scale)
+        edges_[0,1] = 0 # swc convention sets root to -1
+        edges_ += curr_len # append to previous recon
+        curr_len += nm_.shape[0]
+
+        nm.append(nm_)
+        edges.append(edges_)
+        R.append(R_)
+        offset.append(offset_)
+        header.append(header_)
+
+    # concatenate
+    nm = np.vstack(nm)
+    edges = np.vstack(edges)
+    R = np.hstack(R)
+    return nm, edges, R, header
+
+
 # ORIGINAL_SOURCE Janelia Workstation Large Volume Viewer
 # OFFSET 66310.961575 46976.514329 18608.718278
 # COLOR 1.000000,0.200000,0.200000
