@@ -49,6 +49,7 @@ def main(argv):
             -s <swc_file>: input swc_file or folder. for *swc files 7 column conventional reconstruction format.
             -o <output_folder>: folder to create h5 and JW files
             -h <number_of_level>: [OPTIONAL] sets how many chunks around trace will be used
+            -j <output_octree>: [OPTIONAL] creates an octree formated folder at target location
 
         NOTES:
             oct in [1...8]
@@ -64,17 +65,20 @@ def main(argv):
 
     """
 
-    # data_fold='/nrs/mouselight/SAMPLES/2018-08-01-raw-rerender'
-    # ## input_swc_file='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus/2017-09-25_G-001_consensus-proofed.swc'
-    # input_swc_file='/groups/mousebrainmicro/home/base/CODE/MOUSELIGHT/navigator/data/swc_recons/2018-08-01'
-    # output_folder='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2018-08-01'
+    # @@TODO: fix octree support
+
+    data_fold='/nrs/mouselight/SAMPLES/2018-08-01-raw-rerender'
+    ## input_swc_file='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus/2017-09-25_G-001_consensus-proofed.swc'
+    input_swc_file='/groups/mousebrainmicro/home/base/CODE/MOUSELIGHT/navigator/data/swc_recons/2018-08-01'
+    output_folder='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2018-08-01'
+    octree_folder = os.path.join(output_folder, 'JW')
 
     number_of_level = 3
 
     try:
-        opts, args = getopt.getopt(argv,"hi:s:o:",["data_fold=","input_swc_file=","output_folder="])
+        opts, args = getopt.getopt(argv,"hi:s:o:j:",["data_fold=","input_swc_file=","output_folder=","octree_folder="])
     except getopt.GetoptError:
-        print('navigator.py -i <data_folder> -s <swc_file> -o <output_folder>')
+        print('navigator.py -i <data_folder> -s <swc_file> -o <output_folder> -h <OPT:number_of_level> -j <OPT:octree_folder>')
         sys.exit(2)
 
 
@@ -90,13 +94,24 @@ def main(argv):
             input_swc_file = arg
         elif opt in ("-o", "--output_folder"):
             output_folder = arg
+            octree_folder = os.path.join(output_folder,'JW')
         elif opt in ("-h", "--number_of_level"):
             number_of_level = arg
+        elif opt in ("-j", "--octree_folder"):
+            try:
+                octree_folder
+            except NameError:
+                print("Using output folder as JW folder")
+                if octree_folder:
+                    octree_folder = arg
+
+
 
     print('SWCFILE   :', input_swc_file)
     print('DATAFOLDER   :', data_fold)
     print('OUTPUT    :', output_folder)
     print('NUMBEROFLEVEL    :', number_of_level)
+    print('OCTREEFOLDER    :', octree_folder)
 
 
     rootfolder, swc_name = os.path.split(input_swc_file)
@@ -121,7 +136,7 @@ def main(argv):
     output_h5_file = os.path.join(output_folder, output_h5_name)
     converter = util.Convert2JW(output_h5_file, JW_output_folder, number_of_oct_level=None)
     converter.convert2JW()
-    converter.mergeJW(number_of_level=converter.number_of_level)
+    converter.mergeJW(number_of_level=converter.number_of_oct_level)
     converter.create_transform_file()
     print('DONE')
 
