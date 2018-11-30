@@ -209,7 +209,7 @@ class dumper(object):
             depthBase = setting['depthBase']
             leafSize = setting['leafSize']
 
-            with h5py.File(outputFile, "w") as f:
+            with h5py.File(outputFile, "a") as f:
                 # dset_swc = f.create_dataset("reconstruction", (xyz_shifted.shape[0], 7), dtype='f')
                 # for iter, xyz_ in enumerate(xyz_shifted):
                 #     dset_swc[iter, :] = np.array(
