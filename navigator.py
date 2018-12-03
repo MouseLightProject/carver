@@ -49,7 +49,8 @@ def main(argv):
             -s <swc_file>: input swc_file or folder. for *swc files 7 column conventional reconstruction format.
             -o <output_folder>: folder to create h5 and JW files
             -h <number_of_level>: [OPTIONAL] sets how many chunks around trace will be used
-            -j <output_octree>: [OPTIONAL] creates an octree formated folder at target location
+            -j <output_octree>: [OPTIONAL] creates an octree formated folder at target location. "-j" without argument
+                                will create target output at <output_folder>/JW location
 
         NOTES:
             oct in [1...8]
@@ -65,7 +66,8 @@ def main(argv):
 
     """
 
-    # @@TODO: fix octree support
+    # @@TODO: multi swc data dump
+    # @@TODO: fix octree dilation amount. make it user specified
 
     data_fold='/nrs/mouselight/SAMPLES/2018-08-01-raw-rerender'
     ## input_swc_file='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus/2017-09-25_G-001_consensus-proofed.swc'
