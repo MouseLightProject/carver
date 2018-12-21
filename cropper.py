@@ -20,8 +20,8 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
                                                            scale=scale)
     elif os.path.isdir(input_swc):
         inputfolder = input_swc
-        nm, edges, R, header = util.readSWCfolder(inputfolder,scale=scale)
-
+        nm, edges, R = util.appendSWCfolder(inputfolder,scale=scale) # somewhat redundant but cleaner
+        nm_, edges_, R_, filenames, header = util.readSWCfolder(inputfolder,scale=scale)
 
     if cast2vox:
         # to fix the bug in Janelia Workstation
@@ -52,8 +52,8 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
     octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_cover)
     #### second pass (somewhat heuristic, helps with cropping later on)
     octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_dilated)
-    octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_dilated)
-    octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_dilated)
+    # octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_dilated)
+    # octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_dilated)
 
     depthBase = params["nlevels"].astype(int)
     depthFull = params_p1["nlevels"].astype(int)
@@ -98,13 +98,46 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
     #     for iter,txt in enumerate(xyz_shidefaultDataPlaceholderfted):
     #         fswc.write('{:.0f} {:.0f} {:.4f} {:.4f} {:.4f} {:.2f} {:.0f}\n'.format(edges[iter,0].__int__(),1,txt[0]-1,txt[1],txt[2],1,edges[iter,1].__int__()))
 
-
     # dump into file
     with h5py.File(output_h5_file, "w") as f:
         dset_swc = f.create_dataset("reconstruction", (xyz_shifted.shape[0], 7), dtype='f')
         for iter, xyz_ in enumerate(xyz_shifted):
             dset_swc[iter, :] = np.array(
                 [edges[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges[iter, 1].__int__()])
+
+    if os.path.isdir(input_swc):
+        # dump into file
+        with h5py.File(output_h5_file, "a") as f:
+            swc_group = f.create_group("swc_files")
+
+            f_swc_original = swc_group.create_group("original")
+            for it, swcname in enumerate(filenames):
+                numrows = R_[it].shape[0]
+                dset_swc = f_swc_original.create_dataset(swcname,(numrows, 7), dtype='f')
+                edges_swc = edges_[it]
+                nm_swc = nm_[it]
+                for iter, xyz_ in enumerate(nm_swc):
+                    dset_swc[iter, :] = np.array(
+                        [edges_swc[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges_swc[iter, 1].__int__()])
+
+            f_swc_shifted = swc_group.create_group("shifted")
+            for it, swcname in enumerate(filenames):
+                numrows = R_[it].shape[0]
+                dset_swc = f_swc_shifted.create_dataset(swcname,(numrows, 7), dtype='f')
+                edges_swc = edges_[it]
+                nm_swc = nm_[it]
+                nm_swc = nm_swc + params['vixsize'] / scale / 2
+                xyz_ori = util.um2pix(nm_swc, params['A']).T
+                nm_swc = xyz_ori - volReference
+
+                for iter, xyz_ in enumerate(nm_swc):
+                    dset_swc[iter, :] = np.array(
+                        [edges_swc[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges_swc[iter, 1].__int__()])
+
+
+
+
+
 
     dump = util.dumper(data_fold, output_h5_file, setting,tilelist=tilelist)
     dump.write()

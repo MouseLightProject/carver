@@ -69,11 +69,11 @@ def main(argv):
     # @@TODO: multi swc data dump
     # @@TODO: fix octree dilation amount. make it user specified
 
-    data_fold='/nrs/mouselight/SAMPLES/2018-08-01-raw-rerender'
-    ## input_swc_file='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus/2017-09-25_G-001_consensus-proofed.swc'
-    input_swc_file='/groups/mousebrainmicro/home/base/CODE/MOUSELIGHT/navigator/data/swc_recons/2018-08-01'
-    output_folder='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2018-08-01'
-    octree_folder = os.path.join(output_folder, 'JW')
+    # data_fold='/nrs/mouselight/SAMPLES/2018-08-01-raw-rerender'
+    # ## input_swc_file='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2017-09-25_G-001_consensus/2017-09-25_G-001_consensus-proofed.swc'
+    # input_swc_file='/groups/mousebrainmicro/home/base/CODE/MOUSELIGHT/navigator/data/swc_recons/2018-08-01'
+    # output_folder='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2018-08-01'
+    # octree_folder = os.path.join(output_folder, 'JW')
 
     number_of_level = 3
 

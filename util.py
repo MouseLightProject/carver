@@ -80,8 +80,24 @@ def readParameterFile(parameterfile = ""):
 
 def readSWCfolder(swcfolder, scale=1.0):
     swc_name_w_ext = os.listdir(swcfolder)
+    nm, edges, R, offset, header, filenames = ([] for i in range(6))
+    curr_len = 0
+    for iswc_name in swc_name_w_ext:
+        nm_, edges_, R_, offset_, scale_, header_ = readSWC(swcfile=os.path.join(swcfolder, iswc_name), scale=scale)
 
-    nm, edges, R, offset, header = ([] for i in range(5))
+        nm.append(nm_)
+        edges.append(edges_)
+        R.append(R_)
+        offset.append(offset_)
+        header.append(header_)
+        filenames.append(iswc_name)
+
+    return nm, edges, R, filenames, header
+
+def appendSWCfolder(swcfolder, scale=1.0):
+    swc_name_w_ext = os.listdir(swcfolder)
+
+    nm, edges, R, offset, header, filenames = ([] for i in range(6))
 
     curr_len = 0
     for iswc_name in swc_name_w_ext:
@@ -95,12 +111,13 @@ def readSWCfolder(swcfolder, scale=1.0):
         R.append(R_)
         offset.append(offset_)
         header.append(header_)
+        filenames.append(iswc_name)
 
     # concatenate
-    nm = np.vstack(nm)
-    edges = np.vstack(edges)
-    R = np.hstack(R)
-    return nm, edges, R, header
+    nm_ = np.vstack(nm)
+    edges_ = np.vstack(edges)
+    R_ = np.hstack(R)
+    return nm_, edges_, R_
 
 
 # ORIGINAL_SOURCE Janelia Workstation Large Volume Viewer

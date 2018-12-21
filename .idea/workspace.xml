@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d4bcb4d1-3558-4617-b89e-db0c36009a33" name="Default" comment="increased dilation for more context">
+    <list default="true" id="d4bcb4d1-3558-4617-b89e-db0c36009a33" name="Default" comment="file creation fix">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cropper.py" afterPath="$PROJECT_DIR$/cropper.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/navigator.py" afterPath="$PROJECT_DIR$/navigator.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/util.py" afterPath="$PROJECT_DIR$/util.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -19,14 +21,14 @@
     <favorites_list name="navigator" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.49120918">
+    <splitter split-orientation="horizontal" split-proportion="0.4190951">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
           <file leaf-file-name="navigator.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/navigator.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="445">
-                  <caret line="68" column="33" lean-forward="false" selection-start-line="68" selection-start-column="33" selection-end-line="68" selection-end-column="33" />
+                <state relative-caret-position="554">
+                  <caret line="60" column="26" lean-forward="false" selection-start-line="60" selection-start-column="26" selection-end-line="60" selection-end-column="26" />
                   <folding>
                     <element signature="e#69#80#0" expanded="true" />
                   </folding>
@@ -37,11 +39,11 @@
           <file leaf-file-name="util.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/util.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="462">
-                  <caret line="227" column="86" lean-forward="true" selection-start-line="227" selection-start-column="86" selection-end-line="227" selection-end-column="86" />
+                <state relative-caret-position="426">
+                  <caret line="96" column="21" lean-forward="false" selection-start-line="96" selection-start-column="21" selection-end-line="96" selection-end-column="21" />
                   <folding>
                     <element signature="e#0#18#0" expanded="true" />
-                    <marker date="1543619130060" expanded="true" signature="14799:14809" ph="..." />
+                    <marker date="1545362294218" expanded="true" signature="15387:15397" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -51,24 +53,14 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
-          <file leaf-file-name="cropper.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="cropper.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/cropper.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1166">
-                  <caret line="53" column="53" lean-forward="false" selection-start-line="53" selection-start-column="53" selection-end-line="53" selection-end-column="53" />
+                <state relative-caret-position="528">
+                  <caret line="54" column="0" lean-forward="false" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#13#0" expanded="true" />
                   </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="improc.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/improc.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="396">
-                  <caret line="136" column="27" lean-forward="true" selection-start-line="136" selection-start-column="27" selection-end-line="136" selection-end-column="27" />
-                  <folding />
                 </state>
               </provider>
             </entry>
@@ -86,7 +78,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>path</find>
       <find>ix</find>
       <find>output_h5_file</find>
       <find>imsave</find>
@@ -103,7 +94,6 @@
       <find>octpath</find>
       <find>imshow</find>
       <find>sitk</find>
-      <find>reconstruction</find>
       <find>scale</find>
       <find>offset</find>
       <find>gridlist_cover</find>
@@ -116,6 +106,8 @@
       <find>number_of_oct_level</find>
       <find>number_of_level</find>
       <find>gridlist_dilated</find>
+      <find>$PROJECT_DIR$/data/swc_recons/2018-08-01</find>
+      <find>reconstruction</find>
     </findStrings>
     <replaceStrings>
       <replace>keyval</replace>
@@ -145,9 +137,9 @@
         <option value="$PROJECT_DIR$/command_line_scripts.py" />
         <option value="$PROJECT_DIR$/createLabelScript.py" />
         <option value="$PROJECT_DIR$/improc.py" />
-        <option value="$PROJECT_DIR$/cropper.py" />
         <option value="$PROJECT_DIR$/util.py" />
         <option value="$PROJECT_DIR$/navigator.py" />
+        <option value="$PROJECT_DIR$/cropper.py" />
       </list>
     </option>
   </component>
@@ -159,7 +151,7 @@
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1">
+    <navigator proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -172,21 +164,7 @@
       <manualOrder />
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="navigator" type="b2602c69:ProjectViewProjectNode" />
-              <item name="navigator" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scope" />
-      <pane id="Scratches" />
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -465,12 +443,18 @@
       <option name="project" value="LOCAL" />
       <updated>1543619673808</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="file creation fix">
+      <created>1543862964324</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1543862964325</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="81" y="-4" width="3361" height="1452" extended-state="6" />
-    <editor active="true" />
+    <frame x="81" y="-4" width="3359" height="1444" extended-state="6" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16499849" sideWeight="0.3737942" order="1" side_tool="true" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -481,7 +465,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14285715" sideWeight="0.4638365" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294025" sideWeight="0.49772522" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.15468608" sideWeight="0.3773585" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.15468608" sideWeight="0.6226415" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20897786" sideWeight="0.6226415" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.6724351" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -499,7 +483,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/../../../../.." />
     </ignored-roots>
-    <MESSAGE value="stable version&#10;added h5write functionality for data/recon&#10;fixed chunking and dilation, validated using fiji" />
     <MESSAGE value="stable version&#10;TODO: seperate snake part, mavi dependency on python2.7, will create a new repo" />
     <MESSAGE value="precommit before segmentation merge, need to fix LVV bug that causes [-1 -1 0] shift. LVV-[1 1 0]=correct_voxel location, need to add a is_lvv_export condition in swc readers to fix it" />
     <MESSAGE value="updated ignore list, deleted morphsnakes (axonsegment has already have it), after tif export fix" />
@@ -521,28 +504,19 @@
     <MESSAGE value="added double dilation to support larger cropsize&#10;get rid of original swc stuff" />
     <MESSAGE value="Added bulk swc read from a folder" />
     <MESSAGE value="support for read from swcfolder&#10;adding setting argument&#10;support multi recon dump into single file" />
-    <MESSAGE value="increased dilation for more context" />
     <MESSAGE value="fixed number_of_level-&gt;number_of_oct_level bug" />
     <MESSAGE value="fixed h5 datacreation with &quot;a&quot; to prevent overwrites" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed h5 datacreation with &quot;a&quot; to prevent overwrites" />
+    <MESSAGE value="increased dilation for more context" />
+    <MESSAGE value="file creation fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="file creation fix" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/navigator.py</url>
-          <line>128</line>
-          <option name="timeStamp" value="148" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/navigator.py</url>
           <line>133</line>
           <option name="timeStamp" value="151" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/cropper.py</url>
-          <line>49</line>
-          <option name="timeStamp" value="154" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -552,7 +526,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="155" />
+      <option name="time" value="160" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -802,13 +776,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/codecs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="308" column="0" lean-forward="false" selection-start-line="308" selection-start-column="0" selection-end-line="308" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/h5py/_hl/dataset.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="370">
@@ -847,39 +814,47 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cropper.py">
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/codecs.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1166">
-          <caret line="53" column="53" lean-forward="false" selection-start-line="53" selection-start-column="53" selection-end-line="53" selection-end-column="53" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/improc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="136" column="27" lean-forward="true" selection-start-line="136" selection-start-column="27" selection-end-line="136" selection-end-column="27" />
+        <state relative-caret-position="414">
+          <caret line="308" column="0" lean-forward="false" selection-start-line="308" selection-start-column="0" selection-end-line="308" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/util.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="462">
-          <caret line="227" column="86" lean-forward="true" selection-start-line="227" selection-start-column="86" selection-end-line="227" selection-end-column="86" />
+        <state relative-caret-position="426">
+          <caret line="96" column="21" lean-forward="false" selection-start-line="96" selection-start-column="21" selection-end-line="96" selection-end-column="21" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
-            <marker date="1543619130060" expanded="true" signature="14799:14809" ph="..." />
+            <marker date="1545362294218" expanded="true" signature="15387:15397" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/improc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="792">
+          <caret line="136" column="27" lean-forward="false" selection-start-line="136" selection-start-column="27" selection-end-line="136" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cropper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="528">
+          <caret line="54" column="0" lean-forward="false" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/navigator.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="445">
-          <caret line="68" column="33" lean-forward="false" selection-start-line="68" selection-start-column="33" selection-end-line="68" selection-end-column="33" />
+        <state relative-caret-position="554">
+          <caret line="60" column="26" lean-forward="false" selection-start-line="60" selection-start-column="26" selection-end-line="60" selection-end-column="26" />
           <folding>
             <element signature="e#69#80#0" expanded="true" />
           </folding>
