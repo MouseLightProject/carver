@@ -17,6 +17,7 @@ python navigator.py -i /nrs/mouselight/SAMPLES/2018-08-01-raw-rerender -s '/grou
 ```
 
 # notes:
+        Don't use trailing slash '/'. Somehow it can mass with created h5 name. `
         oct in [1...8]
         grid in [0...(2**depth-1)]
 
