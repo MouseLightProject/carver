@@ -10,10 +10,16 @@ creates cropped volume and JW structure (for visualization) based on input rende
         -o <output_folder>: folder to create h5 and JW files
         -h <number_of_level>: [OPTIONAL] sets how many chunks around trace will be used
 ```
-    NOTES:
+
+## example:
+```
+python navigator.py -i /nrs/mouselight/SAMPLES/2018-08-01-raw-rerender -s '/groups/mousebrainmicro/home/base/CODE/MOUSELIGHT/navigator/data/swc_recons/2018-08-01' -o '/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2018-08-01'
+```
+
+# notes:
         oct in [1...8]
         grid in [0...(2**depth-1)]
-    
+
         we keep mouselight data in <root>/<neuron-id>/consensus/<tag>_consensus.swc format, e.g.:
         /groups/mousebrainmicro/mousebrainmicro/shared_tracing/Finished_Neurons/2018-08-01/G-002/consensus/2018-08-01_G-002_consensus.swc
         it is suggested to copy all consensus files for that sample into a single folder manually or with a script than pass input folder with "-f" argument.
