@@ -5,3 +5,4 @@
 data/
 virtenv/
 env/
+__pycache__
