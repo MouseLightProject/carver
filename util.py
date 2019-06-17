@@ -140,7 +140,7 @@ def readSWC(swcfile='./2017-06-10_G-029_Consensus.swc',scale=1.0):
                 else:
                     continue #skip
             else:
-                parts = text.split(' ')
+                parts = text.split()
                 swcline.append(parts)
     lines = np.array(swcline, dtype=float).reshape(-1, 7)
     edges = lines[:,(0,6)]

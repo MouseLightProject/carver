@@ -126,20 +126,21 @@ def main(argv):
     output_h5_name =  '{}-carved.h5'.format(swc_name)
     JW_output_folder = os.path.join(output_folder,'JW')
 
-    if not os.path.exists(JW_output_folder):
-        scale = 1 / 1000  # for voxel, use 1, for scope use 1/1000 to cast to nm
-        cropper.crop_from_render(data_fold, input_swc_file, output_folder, output_swc_name, output_h5_name, scale)
+    # if not os.path.exists(JW_output_folder):
+    scale = 1 / 1000  # for voxel, use 1, for scope use 1/1000 to cast to nm
+    cropper.crop_from_render(data_fold, input_swc_file, output_folder, output_swc_name, output_h5_name, scale)
 
-    # shutil.rmtree(JW_output_folder)
-    if not os.path.exists(JW_output_folder):
-        os.makedirs(JW_output_folder)
-        os.chmod(JW_output_folder, 0o770)
+    # # shutil.rmtree(JW_output_folder)
+    # if not os.path.exists(JW_output_folder):
+    #     os.makedirs(JW_output_folder)
+    #     os.chmod(JW_output_folder, 0o770)
+    #
+    # output_h5_file = os.path.join(output_folder, output_h5_name)
+    # converter = util.Convert2JW(output_h5_file, JW_output_folder, number_of_oct_level=None)
+    # converter.convert2JW()
+    # converter.mergeJW(number_of_level=converter.number_of_oct_level)
+    # converter.create_transform_file()
 
-    output_h5_file = os.path.join(output_folder, output_h5_name)
-    converter = util.Convert2JW(output_h5_file, JW_output_folder, number_of_oct_level=None)
-    converter.convert2JW()
-    converter.mergeJW(number_of_level=converter.number_of_oct_level)
-    converter.create_transform_file()
     print('DONE')
 
 if __name__ == "__main__":
