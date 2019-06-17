@@ -139,8 +139,9 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
 
 
 
-    dump = util.dumper(data_fold, output_h5_file, setting,tilelist=tilelist)
-    dump.write()
+    #dump = util.dumper(data_fold, output_h5_file, setting,tilelist=tilelist)
+    #dump.write()
+    util.dump_write(data_fold, output_h5_file, setting, tilelist)
 
     # write into h5
     # with h5py.File(output_h5_file, "w") as f:

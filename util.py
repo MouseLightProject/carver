@@ -264,6 +264,75 @@ class dumper(object):
 
 
 
+def dump_write(inputLoc, outputFile, setting, tilelist):
+    # dumps volumetric data into h5/zarr
+    #self.inputLoc = inputloc
+    # check if dataset name is provided
+    splitted_name = outputFile.split(':')
+    if  len(splitted_name) == 1:
+        outputFile =  splitted_name[0]
+        datasetName =  "volume"
+    elif len(splitted_name) ==2:
+        outputFile =  splitted_name[0]
+        datasetName =  splitted_name[1]
+    else:
+        raise ValueError('output file name has more than one ":"', outputFile)
+    #self.setting = setting
+    #self.tilelist = tilelist
+    tileids = list(tilelist.keys())
+
+    if setting['type'] is 'h5':
+        # write into h5
+        #tileids = self.tileids
+        #inputLoc = self.inputLoc
+        #outputFile = self.outputFile
+        #tilelist = self.tilelist
+        #setting = self.setting
+        volSize = setting['volSize']
+        tileSize = setting['tileSize']
+        volReference = setting['volReference']
+        depthFull = setting['depthFull']
+        depthBase = setting['depthBase']
+        leafSize = setting['leafSize']
+
+        with h5py.File(outputFile, "a") as f:
+            # dset_swc = f.create_dataset("reconstruction", (xyz_shifted.shape[0], 7), dtype='f')
+            # for iter, xyz_ in enumerate(xyz_shifted):
+            #     dset_swc[iter, :] = np.array(
+            #         [edges[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges[iter, 1].__int__()])
+            dset = f.create_dataset(datasetName, volSize, dtype=setting['dtype'], chunks=setting['chunkSize'],
+                                    compression=setting['compression'], compression_opts=setting['compression_opts'])
+            # crop chuncks from a tile read in tilelist
+            for iter, idTile in enumerate(tileids):
+                print('{} : {} out of {}'.format(idTile, iter, len(tileids)))
+                tilename = '/'.join(a for a in idTile)
+                tilepath = os.path.join(inputLoc, tilename)
+
+                ijkTile = np.array(list(idTile), dtype=int)
+                xyzTile = improc.oct2grid(ijkTile.reshape(1, len(ijkTile)))
+                locTile = xyzTile * tileSize
+                locShift = np.asarray(locTile - volReference, dtype=int).flatten()
+                if os.path.isdir(tilepath):
+
+                    im = improc.loadTiles(tilepath)
+                    relativeDepth = depthFull - depthBase
+
+                    # patches in idTiled
+                    for patch in tilelist[idTile]:
+                        ijk = np.array(list(patch), dtype=int)
+                        xyz = improc.oct2grid(ijk.reshape(1, len(ijk)))  # in 0 base
+
+                        start = np.ndarray.flatten(xyz * leafSize)
+                        end = np.ndarray.flatten(start + leafSize)
+                        # print(start,end)
+                        imBatch = im[start[0]:end[0], start[1]:end[1], start[2]:end[2], :]
+
+                        start = start + locShift
+                        end = end + locShift
+                        dset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
+
+
+
 class Convert2JW(object):
     def __init__(self,h5file,experiment_folder,number_of_oct_level=None):
         with h5py.File(h5file, "r") as f:
