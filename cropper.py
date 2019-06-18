@@ -6,7 +6,6 @@ import numpy as np
 import h5py
 import skimage.io as io
 
-
 def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5_name,scale,cast2vox=True):
     output_swc_file = os.path.join(output_folder,output_swc_name)
     output_h5_file =  os.path.join(output_folder,output_h5_name)
@@ -49,11 +48,13 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
 
     octpath_cover = np.unique(octpath, axis=0)
     gridlist_cover = improc.oct2grid(octpath_cover)
-    octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_cover)
-    #### second pass (somewhat heuristic, helps with cropping later on)
-    octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_dilated)
-    # octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_dilated)
-    # octpath_dilated,gridlist_dilated = improc.dilateOct(octpath_dilated)
+
+    octpath_dilated = octpath_cover
+    dilation_count = 8
+    # should be enough to get about a 512 vx cube around each swc centerpoint
+    # (except 4x less in z, b/c axial rez is less)
+    for dilation_index in range(dilation_count):
+        octpath_dilated, gridlist_dilated = improc.dilateOct(octpath_dilated)
 
     depthBase = params["nlevels"].astype(int)
     depthFull = params_p1["nlevels"].astype(int)
