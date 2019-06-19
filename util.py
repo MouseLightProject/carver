@@ -174,94 +174,98 @@ def um2pix(um,A):
     # return(np.dot(np.linalg.pinv(A),um.T))
     return(np.dot(np.diag(1 / np.diagonal(A[:3, :3])), (um - A[:, 3]).T))
 
+
 def pix2um(xyz,A):
     return(np.dot(A,xyz))
-def pix2oct(xyz,dims,depth):
-    # for a given xyz, box size and depth, returns the location int the patch and patch path
-    res = dims/depth
-    ijk = np.floor(xyz/res)
-    # convert ijk to
-
-    return 0
-
-def um2oct(xyz,dims,transform ):
-    # for a given um, transform and image size, returns the patch location
-    return 0
-def traverseOct():
-    # lets you to traverse octree
-    return 0
 
 
-class dumper(object):
-    # dumps volumetric data into h5/zarr
-    def __init__(self, inputloc, outputFile, setting, tilelist=None):
-        self.inputLoc = inputloc
-        # check if dataset name is provided
-        splitted_name = outputFile.split(':')
-        if  len(splitted_name) == 1:
-            self.outputFile =  splitted_name[0]
-            self.datasetName =  "volume"
-        elif len(splitted_name) ==2:
-            self.outputFile =  splitted_name[0]
-            self.datasetName =  splitted_name[1]
-        else:
-            raise ValueError('output file name has more than one ":"', outputFile)
-        self.setting = setting
-        self.tilelist = tilelist
-        if tilelist:
-            self.tileids = list(tilelist.keys())
+# def pix2oct(xyz,dims,depth):
+#     # for a given xyz, box size and depth, returns the location int the patch and patch path
+#     res = dims/depth
+#     ijk = np.floor(xyz/res)
+#     # convert ijk to
+#     return 0
+#
+#
+# def um2oct(xyz,dims,transform ):
+#     # for a given um, transform and image size, returns the patch location
+#     return 0
+#
+#
+# def traverseOct():
+#     # lets you to traverse octree
+#     return 0
 
-    def write(self):
-        if self.setting['type'] is 'h5':
-            # write into h5
-            tileids = self.tileids
-            inputLoc = self.inputLoc
-            outputFile = self.outputFile
-            tilelist = self.tilelist
-            setting = self.setting
-            volSize = setting['volSize']
-            tileSize = setting['tileSize']
-            volReference = setting['volReference']
-            depthFull = setting['depthFull']
-            depthBase = setting['depthBase']
-            leafSize = setting['leafSize']
 
-            with h5py.File(outputFile, "a") as f:
-                # dset_swc = f.create_dataset("reconstruction", (xyz_shifted.shape[0], 7), dtype='f')
-                # for iter, xyz_ in enumerate(xyz_shifted):
-                #     dset_swc[iter, :] = np.array(
-                #         [edges[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges[iter, 1].__int__()])
-                dset = f.create_dataset(self.datasetName, volSize, dtype=setting['dtype'], chunks=setting['chunkSize'],
-                                        compression=setting['compression'], compression_opts=setting['compression_opts'])
-                # crop chuncks from a tile read in tilelist
-                for iter, idTile in enumerate(tileids):
-                    print('{} : {} out of {}'.format(idTile, iter, len(tileids)))
-                    tilename = '/'.join(a for a in idTile)
-                    tilepath = os.path.join(inputLoc, tilename)
-
-                    ijkTile = np.array(list(idTile), dtype=int)
-                    xyzTile = improc.oct2grid(ijkTile.reshape(1, len(ijkTile)))
-                    locTile = xyzTile * tileSize
-                    locShift = np.asarray(locTile - volReference, dtype=int).flatten()
-                    if os.path.isdir(tilepath):
-
-                        im = improc.loadTiles(tilepath)
-                        relativeDepth = depthFull - depthBase
-
-                        # patches in idTiled
-                        for patch in tilelist[idTile]:
-                            ijk = np.array(list(patch), dtype=int)
-                            xyz = improc.oct2grid(ijk.reshape(1, len(ijk)))  # in 0 base
-
-                            start = np.ndarray.flatten(xyz * leafSize)
-                            end = np.ndarray.flatten(start + leafSize)
-                            # print(start,end)
-                            imBatch = im[start[0]:end[0], start[1]:end[1], start[2]:end[2], :]
-
-                            start = start + locShift
-                            end = end + locShift
-                            dset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
-
+# class dumper(object):
+#     # dumps volumetric data into h5/zarr
+#     def __init__(self, inputloc, outputFile, setting, tilelist=None):
+#         self.inputLoc = inputloc
+#         # check if dataset name is provided
+#         splitted_name = outputFile.split(':')
+#         if  len(splitted_name) == 1:
+#             self.outputFile =  splitted_name[0]
+#             self.datasetName =  "volume"
+#         elif len(splitted_name) ==2:
+#             self.outputFile =  splitted_name[0]
+#             self.datasetName =  splitted_name[1]
+#         else:
+#             raise ValueError('output file name has more than one ":"', outputFile)
+#         self.setting = setting
+#         self.tilelist = tilelist
+#         if tilelist:
+#             self.tileids = list(tilelist.keys())
+#
+#     def write(self):
+#         if self.setting['type'] is 'h5':
+#             # write into h5
+#             tileids = self.tileids
+#             inputLoc = self.inputLoc
+#             outputFile = self.outputFile
+#             tilelist = self.tilelist
+#             setting = self.setting
+#             volSize = setting['volSize']
+#             tileSize = setting['tileSize']
+#             volReference = setting['volReference']
+#             depthFull = setting['depthFull']
+#             depthBase = setting['depthBase']
+#             leafSize = setting['leafSize']
+#
+#             with h5py.File(outputFile, "a") as f:
+#                 # dset_swc = f.create_dataset("reconstruction", (xyz_shifted.shape[0], 7), dtype='f')
+#                 # for iter, xyz_ in enumerate(xyz_shifted):
+#                 #     dset_swc[iter, :] = np.array(
+#                 #         [edges[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges[iter, 1].__int__()])
+#                 dset = f.create_dataset(self.datasetName, volSize, dtype=setting['dtype'], chunks=setting['chunkSize'],
+#                                         compression=setting['compression'], compression_opts=setting['compression_opts'])
+#                 # crop chuncks from a tile read in tilelist
+#                 for iter, idTile in enumerate(tileids):
+#                     print('{} : {} out of {}'.format(idTile, iter, len(tileids)))
+#                     tilename = '/'.join(a for a in idTile)
+#                     tilepath = os.path.join(inputLoc, tilename)
+#
+#                     ijkTile = np.array(list(idTile), dtype=int)
+#                     xyzTile = improc.oct2grid(ijkTile.reshape(1, len(ijkTile)))
+#                     locTile = xyzTile * tileSize
+#                     locShift = np.asarray(locTile - volReference, dtype=int).flatten()
+#                     if os.path.isdir(tilepath):
+#
+#                         im = improc.loadTiles(tilepath)
+#                         relativeDepth = depthFull - depthBase
+#
+#                         # patches in idTiled
+#                         for patch in tilelist[idTile]:
+#                             ijk = np.array(list(patch), dtype=int)
+#                             xyz = improc.oct2grid(ijk.reshape(1, len(ijk)))  # in 0 base
+#
+#                             start = np.ndarray.flatten(xyz * leafSize)
+#                             end = np.ndarray.flatten(start + leafSize)
+#                             # print(start,end)
+#                             imBatch = im[start[0]:end[0], start[1]:end[1], start[2]:end[2], :]
+#
+#                             start = start + locShift
+#                             end = end + locShift
+#                             dset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
 
 
 def dump_write(inputLoc, outputFile, setting, tilelist):
@@ -304,7 +308,7 @@ def dump_write(inputLoc, outputFile, setting, tilelist):
                                     compression=setting['compression'], compression_opts=setting['compression_opts'])
             # crop chuncks from a tile read in tilelist
             for iter, idTile in enumerate(tileids):
-                print('{} : {} out of {}'.format(idTile, iter, len(tileids)))
+                print('{} : {} out of {}'.format(idTile, iter+1, len(tileids)))
                 tilename = '/'.join(a for a in idTile)
                 tilepath = os.path.join(inputLoc, tilename)
 

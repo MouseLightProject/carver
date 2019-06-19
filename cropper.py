@@ -11,6 +11,8 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
     output_h5_file =  os.path.join(output_folder,output_h5_name)
 
     params = util.readParameterFile(parameterfile=data_fold+"/calculated_parameters.jl")
+    depthBase = params["nlevels"].astype(int)
+    tileSize = params["leafshape"].astype(int)
 
     # check if input argument is file or folder
     if os.path.isfile(input_swc):
@@ -30,36 +32,44 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
         # if any([re.findall('Janelia Workstation Large Volume Viewer', lines) for lines in header]):
         #     xyz=xyz-[1,1,0]
         # upsample xyz if needed
-        diff_xyz = np.diff(xyz_ori,axis=0)
-        norm_xyz = np.sqrt(np.sum(diff_xyz**2,axis=1))
-        if np.mean(norm_xyz)>5:
-            xyz = util.upsampleSWC(xyz_ori, edges, sp=10)
+        centerpoint_count = xyz_ori.shape[0]
+        if centerpoint_count > 1 :
+            diff_xyz = np.diff(xyz_ori,axis=0)
+            norm_xyz = np.sqrt(np.sum(diff_xyz**2,axis=1))
+            if np.mean(norm_xyz)>5:
+                xyz = util.upsampleSWC(xyz_ori, edges, sp=10)
+            else:
+                xyz = xyz_ori
+        else:
+            xyz = xyz_ori
     else:
         xyz = nm
 
-    if False:
-        octpath, xres = improc.xyz2oct(xyz,params)
-    else:
-        depthextend = 3
-        params_p1=params.copy()
-        params_p1["nlevels"]=params_p1["nlevels"]+depthextend
-        params_p1["leafshape"]=params_p1["leafshape"]/(2**depthextend)
-        octpath, xres = improc.xyz2oct(xyz,params_p1)
+    # Each tile in the rendered image will itself be 'octreed' into a set of 'leafs'
+    # depthextend tells now many octree levels there will be within each tile
+
+    depthextend = 3
+    params_p1 = params.copy()
+    params_p1["nlevels"]=params_p1["nlevels"]+depthextend
+    params_p1["leafshape"]=params_p1["leafshape"]/(2**depthextend)
+    octpath, xres = improc.xyz2oct(xyz,params_p1)
+
+    depthFull = params_p1["nlevels"].astype(int)
+    leafSize = params_p1["leafshape"].astype(int)
 
     octpath_cover = np.unique(octpath, axis=0)
     gridlist_cover = improc.oct2grid(octpath_cover)
 
     octpath_dilated = octpath_cover
-    dilation_count = 8
+    desired_carve_out_half_diagonal_as_scalar = 512
+    desired_carve_out_half_diagonal = desired_carve_out_half_diagonal_as_scalar * np.array([1.0, 1.0, 1.0/4.0])
+    #dilation_count = 8
+    dilation_count = np.max( np.ceil(desired_carve_out_half_diagonal.astype(float) / leafSize.astype(float)) ).astype(int)
     # should be enough to get about a 512 vx cube around each swc centerpoint
     # (except 4x less in z, b/c axial rez is less)
     for dilation_index in range(dilation_count):
         octpath_dilated, gridlist_dilated = improc.dilateOct(octpath_dilated)
 
-    depthBase = params["nlevels"].astype(int)
-    depthFull = params_p1["nlevels"].astype(int)
-    tileSize = params["leafshape"].astype(int)
-    leafSize = params_p1["leafshape"].astype(int)
 
     tilelist = improc.chunklist(octpath_dilated,depthBase) #1..8
 
@@ -135,56 +145,9 @@ def crop_from_render(data_fold,input_swc,output_folder,output_swc_name,output_h5
                     dset_swc[iter, :] = np.array(
                         [edges_swc[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges_swc[iter, 1].__int__()])
 
-
-
-
-
-
+    # Finally, write the carved data to disk
     #dump = util.dumper(data_fold, output_h5_file, setting,tilelist=tilelist)
     #dump.write()
     util.dump_write(data_fold, output_h5_file, setting, tilelist)
 
-    # write into h5
-    # with h5py.File(output_h5_file, "w") as f:
-    #     dset_swc = f.create_dataset("reconstruction", (xyz_shifted.shape[0],7), dtype='f')
-    #     for iter, xyz_ in enumerate(xyz_shifted):
-    #         dset_swc[iter,:] = np.array([edges[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges[iter, 1].__int__()])
-    #
-    #     dset = f.create_dataset("volume", outVolumeSize, dtype='uint16', chunks=tuple(chunksize), compression="gzip", compression_opts=9)
-    #     # crop chuncks from a tile read in tilelist
-    #     for iter,idTile in enumerate(tileids):
-    #         print('{} : {} out of {}'.format(idTile, iter, len(tileids)))
-    #         tilename = '/'.join(a for a in idTile)
-    #         tilepath = data_fold+'/'+tilename
-    #
-    #         ijkTile = np.array(list(idTile), dtype=int)
-    #         xyzTile = improc.oct2grid(ijkTile.reshape(1, len(ijkTile)))
-    #         locTile = xyzTile * tileSize
-    #         locShift = np.asarray(locTile - volReference,dtype=int).flatten()
-    #         if os.path.isdir(tilepath):
-    #
-    #             im = improc.loadTiles(tilepath)
-    #             relativeDepth = depthFull - depthBase
-    #
-    #             # patches in idTiled
-    #             for patch in tilelist[idTile]:
-    #                 ijk = np.array(list(patch),dtype=int)
-    #                 xyz = improc.oct2grid(ijk.reshape(1, len(ijk))) # in 0 base
-    #
-    #                 start = np.ndarray.flatten(xyz*leafSize)
-    #                 end = np.ndarray.flatten(start + leafSize)
-    #                 # print(start,end)
-    #                 imBatch = im[start[0]:end[0],start[1]:end[1],start[2]:end[2],:]
-    #
-    #                 start = start + locShift
-    #                 end = end + locShift
-    #                 dset[start[0]:end[0],start[1]:end[1],start[2]:end[2],:] = imBatch
-    #
-    #                 # imgplot = plt.imshow(np.max(im[..., 0], axis=2))
-    #
-    #                 # # convert to tif
-    # # with h5py.File(output_h5_file, "r") as f:
-    # #     dset = f['volume']
-    # #     io.imsave(cropped_tif_file, np.swapaxes(dset[:,:,:,0],2,0))
-
-
+# end def crop_from_render()
