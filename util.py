@@ -10,7 +10,7 @@ import warnings
 from collections import defaultdict
 import improc
 
-def readTransfrom(transformfile = "/nrs/mouselight/SAMPLES/2017-06-10/transform.txt"):
+def readTransform(transformfile):
     # reads transform.txt file and parse it into a transform
     A = np.zeros((3,4))
     with open(transformfile, 'r') as f:
@@ -63,19 +63,19 @@ def readParameterFile(parameterfile = ""):
             if keyval == 'const nlevels':
                 params['nlevels'] = np.array(eval(parts[1].strip('\n')),dtype=np.float)
             elif keyval == 'const shape_leaf_px':
-                params['leafshape'] = np.array(eval(parts[1].strip('\n')),dtype=np.float)
+                params['leafSize'] = np.array(eval(parts[1].strip('\n')),dtype=np.float)
             elif keyval == 'const voxelsize_used_um':
-                params['vixsize'] = np.array(eval(parts[1].strip('\n')),dtype=np.float)
+                params['spacing'] = np.array(eval(parts[1].strip('\n')),dtype=np.float)
             elif keyval == 'const origin_nm':
-                params['origin'] = np.array(eval(parts[1].strip('\n')),dtype=np.float)
+                params['origin'] = 0.001 * np.array(eval(parts[1].strip('\n')),dtype=np.float)  # convert to um
             elif keyval == 'const nchannels':
                 params['nchannels'] = np.array(eval(parts[1].strip('\n')),dtype=np.float)
             else:
                 it=0
-    A = np.zeros((3,4))
-    np.fill_diagonal(A, params['vixsize']*1000) #convert to nm
-    A[:,3] = params['origin']
-    params['A'] = A
+    #A = np.zeros((3,4))
+    #np.fill_diagonal(A, params['vixsize']*1000) #convert to nm
+    #A[:,3] = params['origin']
+    #params['A'] = A
     return params
 
 def readSWCfolder(swcfolder, scale=1.0):
@@ -123,7 +123,7 @@ def appendSWCfolder(swcfolder, scale=1.0):
 # ORIGINAL_SOURCE Janelia Workstation Large Volume Viewer
 # OFFSET 66310.961575 46976.514329 18608.718278
 # COLOR 1.000000,0.200000,0.200000
-def readSWC(swcfile='./2017-06-10_G-029_Consensus.swc',scale=1.0):
+def readSWC(swcfile, scale=1.0):
     swcline=[]
     offset = np.zeros((1,3))
     offsetkey = 'OFFSET'
@@ -150,7 +150,7 @@ def readSWC(swcfile='./2017-06-10_G-029_Consensus.swc',scale=1.0):
     xyz = xyz/scale
     return (xyz,edges,R,offset,scale,header)
 
-def upsampleSWC(xyz,edges,sp):
+def upsampleSWC(xyz, edges, sp):
     if xyz.shape[0]==1:
         return xyz
     xyzup = []
@@ -168,16 +168,17 @@ def upsampleSWC(xyz,edges,sp):
     return(np.concatenate(xyzup))
 
 
-def um2pix(um,A):
+def um2pix(xyz_um, origin_um, spacing_um):
     # applies transform to convert um into pix location
     # um_ = np.concatenate((um, np.ones((um.shape[0], 1))), axis=1)
     # return(np.dot(np.linalg.pinv(A),um.T))
-    return(np.dot(np.diag(1 / np.diagonal(A[:3, :3])), (um - A[:, 3]).T))
+    #return(np.dot(np.diag(1 / np.diagonal(A[:3, :3])), (xyz_um - A[:, 3]).T))
+    return( (xyz_um-origin_um)/spacing_um )
 
 
-def pix2um(xyz,A):
-    return(np.dot(A,xyz))
-
+def pix2um(xyz_voxels, origin_um, spacing_um):
+    #return(np.dot(A, xyz_voxels))
+    return( spacing_um*xyz_voxels + origin_um )
 
 # def pix2oct(xyz,dims,depth):
 #     # for a given xyz, box size and depth, returns the location int the patch and patch path
@@ -297,9 +298,9 @@ def dump_write(inputLoc, outputFile, setting, tilelist):
         volReference = setting['volReference']
         depthFull = setting['depthFull']
         depthBase = setting['depthBase']
-        leafSize = setting['leafSize']
+        leafSize = setting['leaf_shape']
 
-        with h5py.File(outputFile, "a") as f:
+        with h5py.File(outputFile, "w") as f:
             # dset_swc = f.create_dataset("reconstruction", (xyz_shifted.shape[0], 7), dtype='f')
             # for iter, xyz_ in enumerate(xyz_shifted):
             #     dset_swc[iter, :] = np.array(

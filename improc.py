@@ -22,7 +22,7 @@ def snapLoc(I,nploc,w=1):
     return nplocupdated
 
 
-def xyz2oct(xyz,params):
+def xyz2oct(xyz, nlevel, leafsize):
     # converts xyz location to oct location
     # ALT: params['nlevels'] is the number of levels in the octree, i.e. the length of the path to a leaf stack
     # ALT: params['leafshape'] is the shape of the leaf stacks in the octree, in xyz order
@@ -33,8 +33,8 @@ def xyz2oct(xyz,params):
     if len(xyz.shape) ==1:
         xyz=xyz[None,:]
 
-    nlevel = np.int(params['nlevels'])
-    leafsize = params['leafshape']
+    nlevel = np.int(nlevel)
+    #leafsize = params['leafshape']
     octpath = np.zeros((xyz.shape[0],nlevel))
     xres = np.zeros((xyz.shape[0],3))
     for idx in range(xyz.shape[0]):

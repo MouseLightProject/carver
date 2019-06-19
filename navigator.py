@@ -113,7 +113,7 @@ def main(argv):
     print('DATAFOLDER   :', data_fold)
     print('OUTPUT    :', output_folder)
     print('NUMBEROFLEVEL    :', number_of_level)
-    print('OCTREEFOLDER    :', octree_folder)
+    #print('OCTREEFOLDER    :', octree_folder)
 
 
     rootfolder, swc_name = os.path.split(input_swc_file)
@@ -127,8 +127,7 @@ def main(argv):
     JW_output_folder = os.path.join(output_folder,'JW')
 
     # if not os.path.exists(JW_output_folder):
-    scale = 1 / 1000  # for voxel, use 1, for scope use 1/1000 to cast to nm
-    cropper.crop_from_render(data_fold, input_swc_file, output_folder, output_swc_name, output_h5_name, scale)
+    cropper.crop_from_render(data_fold, input_swc_file, output_folder, output_swc_name, output_h5_name)
 
     # # shutil.rmtree(JW_output_folder)
     # if not os.path.exists(JW_output_folder):
