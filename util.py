@@ -5,7 +5,7 @@ from skimage import io
 import h5py
 from skimage.transform import resize
 import warnings
-
+import z5py
 
 from collections import defaultdict
 import improc
@@ -286,27 +286,69 @@ def dump_write(inputLoc, outputFile, setting, tilelist):
     #self.tilelist = tilelist
     tileids = list(tilelist.keys())
 
+    # Unpack the settings
+    volSize = tuple(map(int,setting['volSize']))
+    tileSize = setting['tileSize']
+    volReference = setting['volReference']
+    depthFull = setting['depthFull']
+    depthBase = setting['depthBase']
+    leafSize = setting['leaf_shape']
+    dtype = setting['dtype']
+    chunkSize = tuple(map(int,setting['chunkSize']))
+    compression_method = setting['compression']
+    comp_opts = setting['compression_opts']
+
     if setting['type'] is 'h5':
         # write into h5
-        #tileids = self.tileids
-        #inputLoc = self.inputLoc
-        #outputFile = self.outputFile
-        #tilelist = self.tilelist
-        #setting = self.setting
-        volSize = setting['volSize']
-        tileSize = setting['tileSize']
-        volReference = setting['volReference']
-        depthFull = setting['depthFull']
-        depthBase = setting['depthBase']
-        leafSize = setting['leaf_shape']
-
         with h5py.File(outputFile, "w") as f:
             # dset_swc = f.create_dataset("reconstruction", (xyz_shifted.shape[0], 7), dtype='f')
             # for iter, xyz_ in enumerate(xyz_shifted):
             #     dset_swc[iter, :] = np.array(
             #         [edges[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges[iter, 1].__int__()])
-            dset = f.create_dataset(datasetName, volSize, dtype=setting['dtype'], chunks=setting['chunkSize'],
-                                    compression=setting['compression'], compression_opts=setting['compression_opts'])
+            dset = f.create_dataset(datasetName,
+                                    volSize,
+                                    dtype=dtype,
+                                    chunks=chunkSize,
+                                    compression=compression_method,
+                                    compression_opts=comp_opts)
+            # crop chuncks from a tile read in tilelist
+            for iter, idTile in enumerate(tileids):
+                print('{} : {} out of {}'.format(idTile, iter+1, len(tileids)))
+                tilename = '/'.join(a for a in idTile)
+                tilepath = os.path.join(inputLoc, tilename)
+
+                ijkTile = np.array(list(idTile), dtype=int)
+                xyzTile = improc.oct2grid(ijkTile.reshape(1, len(ijkTile)))
+                locTile = xyzTile * tileSize
+                locShift = np.asarray(locTile - volReference, dtype=int).flatten()
+                if os.path.isdir(tilepath):
+
+                    im = improc.loadTiles(tilepath)
+                    relativeDepth = depthFull - depthBase
+
+                    # patches in idTiled
+                    for patch in tilelist[idTile]:
+                        ijk = np.array(list(patch), dtype=int)
+                        xyz = improc.oct2grid(ijk.reshape(1, len(ijk)))  # in 0 base
+
+                        start = np.ndarray.flatten(xyz * leafSize)
+                        end = np.ndarray.flatten(start + leafSize)
+                        # print(start,end)
+                        imBatch = im[start[0]:end[0], start[1]:end[1], start[2]:end[2], :]
+
+                        start = start + locShift
+                        end = end + locShift
+                        dset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
+    elif setting['type'] is 'n5' or setting['type'] is 'zarr':
+        # write into z5 or n5
+        use_zarr_format = (setting['type']=='zarr')
+        with z5py.File(outputFile, "w", use_zarr_format=use_zarr_format) as f:
+            dset = f.create_dataset(datasetName,
+                                    shape=volSize,
+                                    dtype=dtype,
+                                    chunks=chunkSize,
+                                    compression=compression_method,
+                                    **comp_opts)
             # crop chuncks from a tile read in tilelist
             for iter, idTile in enumerate(tileids):
                 print('{} : {} out of {}'.format(idTile, iter+1, len(tileids)))

@@ -6,9 +6,8 @@ import numpy as np
 import h5py
 import skimage.io as io
 
-def crop_from_render(data_fold, input_swc,output_folder, output_swc_name, output_h5_name):
-    output_swc_file = os.path.join(output_folder,output_swc_name)
-    output_h5_file =  os.path.join(output_folder,output_h5_name)
+def crop_from_render(data_fold, input_swc, output_folder, output_volume_file_name):
+    output_volume_file_path =  os.path.join(output_folder, output_volume_file_name)
 
     params = util.readParameterFile(parameterfile=data_fold+"/calculated_parameters.jl")
     tile_level_count = params["nlevels"].astype(int)
@@ -70,19 +69,32 @@ def crop_from_render(data_fold, input_swc,output_folder, output_swc_name, output
 
     setting = dict()
     setting['volSize'] = outVolumeSize
-    setting['chunkSize'] = tuple(chunksize)
+    setting['chunkSize'] = chunksize
     setting['depthBase'] = tile_level_count
     setting['depthFull'] = leaf_level_count
     setting['tileSize'] = tile_shape
     setting['leaf_shape'] = leaf_shape
     setting['volReference'] = volReference
 
-    setting['compression'] = "gzip"
-    setting['compression_opts'] = 9
     setting['dtype'] = 'uint16'
-    setting['type'] = 'h5'
+
+    output_file_extension = os.path.splitext(output_volume_file_name)[1]
+    if output_file_extension == '.h5' :
+        setting['type'] = 'h5'
+        setting['compression'] = "gzip"
+        setting['compression_opts'] = 9
+    elif output_file_extension == '.n5' :
+        setting['type'] = 'n5'
+        setting['compression'] = "gzip"
+        setting['compression_opts'] = {'level': 9}
+    elif output_file_extension == '.zarr':
+        setting['type'] = 'zarr'
+        setting['compression'] = "blosc"
+        setting['compression_opts'] = {}
+    else :
+        raise RuntimeError('Don''t recognize the output file extension %s' % output_file_extension)
 
     # Finally, write the voxel carved data to disk
-    util.dump_write(data_fold, output_h5_file, setting, tilelist)
+    util.dump_write(data_fold, output_volume_file_path, setting, tilelist)
 
 # end def crop_from_render()

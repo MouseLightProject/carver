@@ -75,7 +75,7 @@ def main(argv):
     # output_folder='/groups/mousebrainmicro/mousebrainmicro/users/base/AnnotationData/h5repo/2018-08-01'
     # octree_folder = os.path.join(output_folder, 'JW')
 
-    number_of_level = 3
+    additional_level_count = 3
 
     try:
         opts, args = getopt.getopt(argv,"hi:s:o:j:",["data_fold=","input_swc_file=","output_folder=","octree_folder="])
@@ -98,7 +98,7 @@ def main(argv):
             output_folder = arg
             octree_folder = os.path.join(output_folder,'JW')
         elif opt in ("-h", "--number_of_level"):
-            number_of_level = arg
+            additional_level_count = arg
         elif opt in ("-j", "--octree_folder"):
             try:
                 octree_folder
@@ -109,25 +109,25 @@ def main(argv):
 
 
 
-    print('SWCFILE   :', input_swc_file)
-    print('DATAFOLDER   :', data_fold)
-    print('OUTPUT    :', output_folder)
-    print('NUMBEROFLEVEL    :', number_of_level)
+    print('SWC FILE   :', input_swc_file)
+    print('DATA FOLDER   :', data_fold)
+    print('OUTPUT FOLDER    :', output_folder)
+    print('ADDITIONAL LEVEL COUNT    :', additional_level_count)
     #print('OCTREEFOLDER    :', octree_folder)
 
 
-    rootfolder, swc_name = os.path.split(input_swc_file)
+    rootfolder, swc_file_name = os.path.split(input_swc_file)
     #swc_name, _ = swc_name_w_ext.split(os.extsep)
 
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    output_swc_name = '{}-carved.swc'.format(swc_name)
-    output_h5_name =  '{}-carved.h5'.format(swc_name)
-    JW_output_folder = os.path.join(output_folder,'JW')
+    #output_swc_name = '{}-carved.swc'.format(swc_name)
+    output_volume_file_name =  '{}-carved.zarr'.format(swc_file_name)
+    #JW_output_folder = os.path.join(output_folder,'JW')
 
     # if not os.path.exists(JW_output_folder):
-    cropper.crop_from_render(data_fold, input_swc_file, output_folder, output_swc_name, output_h5_name)
+    cropper.crop_from_render(data_fold, input_swc_file, output_folder, output_volume_file_name)
 
     # # shutil.rmtree(JW_output_folder)
     # if not os.path.exists(JW_output_folder):
