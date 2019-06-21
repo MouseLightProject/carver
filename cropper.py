@@ -42,6 +42,7 @@ def crop_from_render(data_fold, input_swc, output_folder, output_volume_file_nam
     octpath_cover = np.unique(octpath, axis=0)
     gridlist_cover = improc.oct2grid(octpath_cover)
 
+    print('About to start dilation...')
     octpath_dilated = octpath_cover.copy()
     desired_carve_out_half_diagonal_as_scalar = 512
     desired_carve_out_half_diagonal = desired_carve_out_half_diagonal_as_scalar * np.array([1.0, 1.0, 1.0/4.0])
@@ -51,7 +52,8 @@ def crop_from_render(data_fold, input_swc, output_folder, output_volume_file_nam
     # (except 4x less in z, b/c axial rez is less)
     for dilation_index in range(dilation_count):
         octpath_dilated, gridlist_dilated = improc.dilateOct(octpath_dilated)
-
+        print('Finished dilation iteration %d of %d' % (dilation_index+1, dilation_count))
+    print('Done with dilation!')
 
     tilelist = improc.chunklist(octpath_dilated, tile_level_count) #1..8
 

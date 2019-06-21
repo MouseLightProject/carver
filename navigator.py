@@ -123,7 +123,7 @@ def main(argv):
         os.makedirs(output_folder)
 
     #output_swc_name = '{}-carved.swc'.format(swc_name)
-    output_volume_file_name =  '{}-carved.zarr'.format(swc_file_name)
+    output_volume_file_name =  '{}-carved.n5'.format(swc_file_name)
     #JW_output_folder = os.path.join(output_folder,'JW')
 
     # if not os.path.exists(JW_output_folder):
