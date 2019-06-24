@@ -1,3 +1,5 @@
+from functools import partial
+from multiprocessing import Pool
 import numpy as np
 import itertools
 import os
@@ -6,6 +8,7 @@ import h5py
 from skimage.transform import resize
 import warnings
 import z5py
+import tqdm
 
 from collections import defaultdict
 import improc
@@ -269,6 +272,36 @@ def pix2um(xyz_voxels, origin_um, spacing_um):
 #                             dset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
 
 
+def dump_single_tile_id(tile_id, inputLoc, tileSize, volReference, depthFull, depthBase, tilelist, leafSize, dset):
+    tilename = '/'.join(a for a in tile_id)
+    tilepath = os.path.join(inputLoc, tilename)
+
+    ijkTile = np.array(list(tile_id), dtype=int)
+    xyzTile = improc.oct2grid(ijkTile.reshape(1, len(ijkTile)))
+    locTile = xyzTile * tileSize
+    locShift = np.asarray(locTile - volReference, dtype=int).flatten()
+    if os.path.isdir(tilepath):
+
+        im = improc.loadTiles(tilepath)
+        relativeDepth = depthFull - depthBase
+
+        # patches in idTiled
+        for patch in tilelist[tile_id]:
+            ijk = np.array(list(patch), dtype=int)
+            xyz = improc.oct2grid(ijk.reshape(1, len(ijk)))  # in 0 base
+
+            start = np.ndarray.flatten(xyz * leafSize)
+            end = np.ndarray.flatten(start + leafSize)
+            # print(start,end)
+            imBatch = im[start[0]:end[0], start[1]:end[1], start[2]:end[2], :]
+
+            start = start + locShift
+            end = end + locShift
+            dset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
+    #print('Done with tile id %s' % tile_id)
+
+
+
 def dump_write(inputLoc, outputFile, setting, tilelist):
     # dumps volumetric data into h5/zarr
     #self.inputLoc = inputloc
@@ -311,6 +344,8 @@ def dump_write(inputLoc, outputFile, setting, tilelist):
                                     chunks=chunkSize,
                                     compression=compression_method,
                                     compression_opts=comp_opts)
+
+
             # crop chuncks from a tile read in tilelist
             for iter, idTile in enumerate(tileids):
                 print('{} : {} out of {}'.format(idTile, iter+1, len(tileids)))
@@ -349,168 +384,19 @@ def dump_write(inputLoc, outputFile, setting, tilelist):
                                     chunks=chunkSize,
                                     compression=compression_method,
                                     **comp_opts)
-            # crop chuncks from a tile read in tilelist
-            for iter, idTile in enumerate(tileids):
-                print('{} : {} out of {}'.format(idTile, iter+1, len(tileids)))
-                tilename = '/'.join(a for a in idTile)
-                tilepath = os.path.join(inputLoc, tilename)
 
-                ijkTile = np.array(list(idTile), dtype=int)
-                xyzTile = improc.oct2grid(ijkTile.reshape(1, len(ijkTile)))
-                locTile = xyzTile * tileSize
-                locShift = np.asarray(locTile - volReference, dtype=int).flatten()
-                if os.path.isdir(tilepath):
-
-                    im = improc.loadTiles(tilepath)
-                    relativeDepth = depthFull - depthBase
-
-                    # patches in idTiled
-                    for patch in tilelist[idTile]:
-                        ijk = np.array(list(patch), dtype=int)
-                        xyz = improc.oct2grid(ijk.reshape(1, len(ijk)))  # in 0 base
-
-                        start = np.ndarray.flatten(xyz * leafSize)
-                        end = np.ndarray.flatten(start + leafSize)
-                        # print(start,end)
-                        imBatch = im[start[0]:end[0], start[1]:end[1], start[2]:end[2], :]
-
-                        start = start + locShift
-                        end = end + locShift
-                        dset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
-
-
-
-class Convert2JW(object):
-    def __init__(self,h5file,experiment_folder,number_of_oct_level=None):
-        with h5py.File(h5file, "r") as f:
-            volume = f["volume"]
-            self.h5_dims= np.array(volume.shape)
-            self.h5_chunk_size = np.array(volume.chunks)
-            if not number_of_oct_level:
-                # estimate leaf size & depth
-                # use multiple of chunk size for leaf
-                self.target_leaf_size = self.h5_chunk_size[:3] * 8  # set target_leaf_size to a multiple of chunk size for efficiency
-                depths = np.arange(2, 7)[:,None]
-                self.output_dims = 2**depths[np.where(np.all(2**depths*self.target_leaf_size[None,:]>=self.h5_dims[:3],axis=1))[0]].flatten()[0]*self.target_leaf_size
-                # depths = np.arange(2, 10)[:,None]
-                # self.output_dims = 2**depths[np.where(np.all(2 **depths*self.h5_chunk_size[:3][None,:]>self.h5_dims[:3],axis=1))[0]].flatten()[0]*self.h5_chunk_size[:3]
-                self.number_of_oct_level = np.log2(self.output_dims[0]/self.target_leaf_size[0]).__int__()
-            else:
-                self.output_dims = self.h5_dims
-                self.number_of_oct_level = number_of_oct_level
-                self.target_leaf_size = np.asarray(np.ceil(np.array(self.output_dims[:3]) / 2 ** self.number_of_level),
-                                                   np.int)  # need to iter over leafs
-        self.h5file = h5file
-        self.experiment_folder = experiment_folder
-
-    def __str__(self):
-        return "{}\n{}\n{}\n{}\n{}".format(self.output_dims,self.number_of_level,self.target_leaf_size,self.h5file,self.experiment_folder)
-
-    def convert2JW(self):
-        h5file = self.h5file
-        number_of_oct_level = self.number_of_oct_level
-        experiment_folder = self.experiment_folder
-        target_leaf_size = self.target_leaf_size
-        with h5py.File(h5file, "r") as f:
-            volume = f["volume"]
-            output_dims = volume.shape
-            bit_multiplication_array = 2**np.arange(3)
-            #target_leaf_size = np.asarray(np.ceil(np.array(output_dims[:3]) / 2 ** number_of_oct_level), np.int)
-            padded_size = target_leaf_size*2**number_of_oct_level
-            range_values = [np.asarray(np.arange(0, padded_size[ii], target_leaf_size[ii]),dtype=np.int).tolist() for ii in range(3)]
-
-            for ix,ref in enumerate(list(itertools.product(*range_values))):
-                bb_end = np.asarray(np.min((ref+target_leaf_size,np.array(output_dims[:3])),axis=0),dtype=np.int)
-                patch_ = volume[ref[0]:bb_end[0], ref[1]:bb_end[1], ref[2]:bb_end[2], :]
-                if ~np.any(patch_):
-                    continue
-
-                # '''if patch size is smaller than full volume size pad zeros'''
-                if np.any(bb_end-np.array(ref) < target_leaf_size):
-                    # pad
-                    patch = np.zeros(np.append(target_leaf_size,2),dtype=np.uint16)
-                    patch[:patch_.shape[0], :patch_.shape[1], :patch_.shape[2],:] = patch_
-                else:
-                    patch = patch_
-
-                folder_inds = np.array(np.unravel_index(ix, ([2**number_of_oct_level for ii in range(3)])))
-                folder_inds = folder_inds + 1
-
-                patch_folder_path = []
-                for im in np.arange(number_of_oct_level,0,-1):
-                    bits = folder_inds>2**(im-1)
-                    # bit 2 num
-                    patch_folder_path.append(1+np.sum(bits*bit_multiplication_array))
-                    folder_inds = folder_inds-2**(im-1)*bits
-
-                # create folder
-                outfolder = os.path.join(experiment_folder,'/'.join(str(pp) for pp in patch_folder_path))
-                # if ~np.any(patch):
-                #     continue
-
-                if not os.path.exists(outfolder):
-                    os.makedirs(outfolder)
-                print(outfolder)
-                for ichannel in range(2):
-                    outfile = os.path.join(outfolder,'default.'+str(ichannel)+'.tif')
-                    with warnings.catch_warnings():
-                        warnings.simplefilter("ignore")
-                        io.imsave(outfile, np.swapaxes(patch[:, :, :, ichannel], 2, 0))
-
-    def create_transform_file(self):
-        experiment_folder = self.experiment_folder
-        number_of_oct_level = self.number_of_oct_level
-        # create transform file
-        transform_file = os.path.join(experiment_folder,'transform.txt')
-        with open(transform_file, 'w') as ft:
-            ft.write('ox: {:04.0f}\n'.format(0))
-            ft.write('oy: {:04.0f}\n'.format(0))
-            ft.write('oz: {:04.0f}\n'.format(0))
-            ft.write('sx: {:.0f}\n'.format(2**number_of_oct_level*1000))
-            ft.write('sy: {:.0f}\n'.format(2**number_of_oct_level*1000))
-            ft.write('sz: {:.0f}\n'.format(2**number_of_oct_level*1000))
-            ft.write('nl: {:.0f}\n'.format(number_of_oct_level+1))
-
-    def create_yml_file(self):
-        yml_file = os.path.join(self.experiment_folder,'tilebase.cache.yml')
-
-    def mergeJW(self,number_of_level=3):
-        # reads an octant, down samples it and save a tif file
-        # create all paths from depth-1 to 0
-        experiment_folder = self.experiment_folder
-        leaf_size = self.target_leaf_size
-        values = ['{}/'.format(str(ii + 1)) for ii in range(8)]
-        for current_number_of_level in np.arange(number_of_level-1, -1, -1):
-            for iter_current_folder in list(itertools.product(values, repeat=current_number_of_level)):
-                my_lst_str = ''.join(map(str, iter_current_folder))
-                current_folder = os.path.join(experiment_folder, my_lst_str)
-                if os.path.exists(current_folder):
-                    print(current_folder)
-                    self.__iter_octant__(current_folder,leaf_size)
-
-    def __iter_octant__(self,current_folder,leaf_shape):
-        for ichannel in range(2):
-            im_channel = []
-            for ioct in range(8):
-                current_path = os.path.join(current_folder,str(ioct+1))
-                current_file = current_path+'/default.{}.tif'.format(ichannel)
-                if os.path.exists(current_file):
-                    im_batch = np.swapaxes(io.imread(current_file), 2, 0)
-                else:
-                    im_batch = np.zeros(leaf_shape)
-                im_channel.append(im_batch)
-
-            rt1 = np.concatenate(im_channel[0:2], axis=0)
-            rt2 = np.concatenate(im_channel[2:4], axis=0)
-            rt3 = np.concatenate(im_channel[4:6], axis=0)
-            rt4 = np.concatenate(im_channel[6:8], axis=0)
-            rt5 = np.concatenate((rt1, rt2), axis=1)
-            rt6 = np.concatenate((rt3, rt4), axis=1)
-            merged_Im = np.concatenate((rt5, rt6), axis=2)
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                # down sample image by 2
-                down_image = resize(merged_Im, leaf_shape, preserve_range=True)
-                io.imsave(current_folder+'/default.{}.tif'.format(ichannel),
-                          np.asarray(np.swapaxes(down_image, 2, 0), np.uint16))
+            # crop chunks from a tile read in tilelist
+            f = partial(dump_single_tile_id,
+                        inputLoc=inputLoc,
+                        tileSize=tileSize,
+                        volReference=volReference,
+                        depthFull=depthFull,
+                        depthBase=depthBase,
+                        tilelist=tilelist,
+                        leafSize=leafSize,
+                        dset=dset)
+            # list(map(f, tileids))
+            with Pool(16) as pool :
+                # pool.map(f, tileids)
+                foo = list(tqdm.tqdm(pool.imap(f, tileids), total=len(tileids)))
 

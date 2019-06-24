@@ -5,6 +5,7 @@ import re
 import numpy as np
 import h5py
 import skimage.io as io
+import pickle
 
 def crop_from_render(data_fold, input_swc, output_folder, output_volume_file_name):
     output_volume_file_path =  os.path.join(output_folder, output_volume_file_name)
@@ -39,25 +40,33 @@ def crop_from_render(data_fold, input_swc, output_folder, output_volume_file_nam
     #depthFull = params_p1["nlevels"].astype(int)
     #leaf_shape = params_p1["leafshape"].astype(int)
 
-    octpath_cover = np.unique(octpath, axis=0)
-    gridlist_cover = improc.oct2grid(octpath_cover)
+    swc_base_name = os.path.basename(input_swc)
+    tile_list_pickle_file_name = '%s-tile-list.pickle' % swc_base_name
+    tile_list_pickle_file_path = os.path.join(output_folder, tile_list_pickle_file_name)
+    try:
+        tilelist = pickle.load(open(tile_list_pickle_file_path, 'rb'))
+        print('Loaded tile list from memo file')
+    except os.error:
+        octpath_cover = np.unique(octpath, axis=0)
+        gridlist_cover = improc.oct2grid(octpath_cover)
 
-    print('About to start dilation...')
-    octpath_dilated = octpath_cover.copy()
-    desired_carve_out_half_diagonal_as_scalar = 512
-    desired_carve_out_half_diagonal = desired_carve_out_half_diagonal_as_scalar * np.array([1.0, 1.0, 1.0/4.0])
-    #dilation_count = 8
-    dilation_count = np.max( np.ceil(desired_carve_out_half_diagonal.astype(float) / leaf_shape.astype(float)) ).astype(int).item()
-    # should be enough to get about a 512 vx cube around each swc centerpoint
-    # (except 4x less in z, b/c axial rez is less)
-    for dilation_index in range(dilation_count):
-        octpath_dilated, gridlist_dilated = improc.dilateOct(octpath_dilated)
-        print('Finished dilation iteration %d of %d' % (dilation_index+1, dilation_count))
-    print('Done with dilation!')
+        print('About to start dilation...')
+        #octpath_dilated = octpath_cover.copy()
+        desired_carve_out_half_diagonal_as_scalar = 512
+        desired_carve_out_half_diagonal = desired_carve_out_half_diagonal_as_scalar * np.array([1.0, 1.0, 1.0/4.0])
+        #dilation_count = 8
+        dilation_count = np.max( np.ceil(desired_carve_out_half_diagonal.astype(float) / leaf_shape.astype(float)) ).astype(int).item()
+        # should be enough to get about a 512 vx cube around each swc centerpoint
+        # (except 4x less in z, b/c axial rez is less)
+        octpath_dilated, junk = improc.dilateOct(octpath_cover, dilation_count)
+        #for dilation_index in range(dilation_count):
+        #    print('Finished dilation iteration %d of %d' % (dilation_index+1, dilation_count))
+        print('Done with dilation!')
 
-    tilelist = improc.chunklist(octpath_dilated, tile_level_count) #1..8
+        tilelist = improc.chunklist(octpath_dilated, tile_level_count) #1..8
+        pickle.dump(tilelist, open(tile_list_pickle_file_path, 'wb'))
 
-    tileids = list(tilelist.keys())
+    #tileids = list(tilelist.keys())
     # base on bounding box (results in cropped output volume)
     # gridReference = np.min(gridlist_dilated, axis=0)
     # gridSize = np.max(gridlist_dilated, axis=0) - gridReference +1
