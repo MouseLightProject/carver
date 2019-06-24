@@ -91,7 +91,7 @@ def main(argv):
             sys.exit()
         elif opt in ("-i", "--data_fold"):
             print(arg)
-            data_fold = arg
+            render_folder_name = arg
         elif opt in ("-s", "--input_swc_file"):
             input_swc_file = arg
         elif opt in ("-o", "--output_folder"):
@@ -110,7 +110,7 @@ def main(argv):
 
 
     print('SWC FILE   :', input_swc_file)
-    print('DATA FOLDER   :', data_fold)
+    print('DATA FOLDER   :', render_folder_name)
     print('OUTPUT FOLDER    :', output_folder)
     print('ADDITIONAL LEVEL COUNT    :', additional_level_count)
     #print('OCTREEFOLDER    :', octree_folder)
@@ -127,7 +127,7 @@ def main(argv):
     #JW_output_folder = os.path.join(output_folder,'JW')
 
     # if not os.path.exists(JW_output_folder):
-    cropper.crop_from_render(data_fold, input_swc_file, output_folder, output_volume_file_name)
+    cropper.crop_from_render(render_folder_name, input_swc_file, output_folder, output_volume_file_name)
 
     # # shutil.rmtree(JW_output_folder)
     # if not os.path.exists(JW_output_folder):

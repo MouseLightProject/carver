@@ -272,14 +272,14 @@ def pix2um(xyz_voxels, origin_um, spacing_um):
 #                             dset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
 
 
-def dump_single_tile_id(tile_id, inputLoc, tileSize, volReference, depthFull, depthBase, tilelist, leafSize, dset):
+def dump_single_tile_id(tile_id, inputLoc, tileSize, depthFull, depthBase, tilelist, leafSize, dataset):
     tilename = '/'.join(a for a in tile_id)
     tilepath = os.path.join(inputLoc, tilename)
 
     ijkTile = np.array(list(tile_id), dtype=int)
     xyzTile = improc.oct2grid(ijkTile.reshape(1, len(ijkTile)))
     locTile = xyzTile * tileSize
-    locShift = np.asarray(locTile - volReference, dtype=int).flatten()
+    locShift = np.asarray(locTile, dtype=int).flatten()
     if os.path.isdir(tilepath):
 
         im = improc.loadTiles(tilepath)
@@ -297,106 +297,107 @@ def dump_single_tile_id(tile_id, inputLoc, tileSize, volReference, depthFull, de
 
             start = start + locShift
             end = end + locShift
-            dset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
+            dataset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
     #print('Done with tile id %s' % tile_id)
 
 
 
-def dump_write(inputLoc, outputFile, setting, tilelist):
+def dump_write(render_folder_name, output_file_name, tile_hash, full_volume_shape, tile_shape, leaf_level_count, tile_level_count, leaf_shape, dtype, chunk_shape, compression_method, compression_options, output_file_type):
     # dumps volumetric data into h5/zarr
     #self.inputLoc = inputloc
     # check if dataset name is provided
-    splitted_name = outputFile.split(':')
+    splitted_name = output_file_name.split(':')
     if  len(splitted_name) == 1:
-        outputFile =  splitted_name[0]
+        output_file_name =  splitted_name[0]
         datasetName =  "volume"
     elif len(splitted_name) ==2:
-        outputFile =  splitted_name[0]
+        output_file_name =  splitted_name[0]
         datasetName =  splitted_name[1]
     else:
-        raise ValueError('output file name has more than one ":"', outputFile)
+        raise ValueError('output file name has more than one ":"', output_file_name)
     #self.setting = setting
     #self.tilelist = tilelist
-    tileids = list(tilelist.keys())
+    tile_id_list = list(tile_hash.keys())
 
-    # Unpack the settings
-    volSize = tuple(map(int,setting['volSize']))
-    tileSize = setting['tileSize']
-    volReference = setting['volReference']
-    depthFull = setting['depthFull']
-    depthBase = setting['depthBase']
-    leafSize = setting['leaf_shape']
-    dtype = setting['dtype']
-    chunkSize = tuple(map(int,setting['chunkSize']))
-    compression_method = setting['compression']
-    comp_opts = setting['compression_opts']
+    # # Unpack the settings
+    # volSize = tuple(map(int,setting['volSize']))
+    # tileSize = setting['tileSize']
+    # #volReference = setting['volReference']
+    # depthFull = setting['depthFull']
+    # depthBase = setting['depthBase']
+    # leafSize = setting['leaf_shape']
+    # dtype = setting['dtype']
+    # chunkSize = tuple(map(int,setting['chunkSize']))
+    # compression_method = setting['compression']
+    # comp_opts = setting['compression_opts']
+    volSizeAsTuple = tuple(map(int, full_volume_shape))
+    chunkSizeAsTuple = tuple(map(int, chunk_shape))
 
-    if setting['type'] is 'h5':
+    if output_file_type is 'h5':
         # write into h5
-        with h5py.File(outputFile, "w") as f:
+        with h5py.File(output_file_name, "w") as f:
             # dset_swc = f.create_dataset("reconstruction", (xyz_shifted.shape[0], 7), dtype='f')
             # for iter, xyz_ in enumerate(xyz_shifted):
             #     dset_swc[iter, :] = np.array(
             #         [edges[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges[iter, 1].__int__()])
-            dset = f.create_dataset(datasetName,
-                                    volSize,
-                                    dtype=dtype,
-                                    chunks=chunkSize,
-                                    compression=compression_method,
-                                    compression_opts=comp_opts)
+            dataset = f.create_dataset(datasetName,
+                                       volSizeAsTuple,
+                                       dtype=dtype,
+                                       chunks=chunkSizeAsTuple,
+                                       compression=compression_method,
+                                       compression_opts=compression_options)
 
 
             # crop chuncks from a tile read in tilelist
-            for iter, idTile in enumerate(tileids):
-                print('{} : {} out of {}'.format(idTile, iter+1, len(tileids)))
-                tilename = '/'.join(a for a in idTile)
-                tilepath = os.path.join(inputLoc, tilename)
+            for iter, tile_id in enumerate(tile_id_list):
+                print('{} : {} out of {}'.format(tile_id, iter+1, len(tile_id_list)))
+                tilename = '/'.join(a for a in tile_id)
+                tilepath = os.path.join(render_folder_name, tilename)
 
-                ijkTile = np.array(list(idTile), dtype=int)
+                ijkTile = np.array(list(tile_id), dtype=int)
                 xyzTile = improc.oct2grid(ijkTile.reshape(1, len(ijkTile)))
-                locTile = xyzTile * tileSize
-                locShift = np.asarray(locTile - volReference, dtype=int).flatten()
+                locTile = xyzTile * tile_shape
+                locShift = np.asarray(locTile, dtype=int).flatten()
                 if os.path.isdir(tilepath):
 
                     im = improc.loadTiles(tilepath)
-                    relativeDepth = depthFull - depthBase
+                    relativeDepth = leaf_level_count - tile_level_count
 
                     # patches in idTiled
-                    for patch in tilelist[idTile]:
+                    for patch in tile_hash[tile_id]:
                         ijk = np.array(list(patch), dtype=int)
                         xyz = improc.oct2grid(ijk.reshape(1, len(ijk)))  # in 0 base
 
-                        start = np.ndarray.flatten(xyz * leafSize)
-                        end = np.ndarray.flatten(start + leafSize)
+                        start = np.ndarray.flatten(xyz * leaf_shape)
+                        end = np.ndarray.flatten(start + leaf_shape)
                         # print(start,end)
                         imBatch = im[start[0]:end[0], start[1]:end[1], start[2]:end[2], :]
 
                         start = start + locShift
                         end = end + locShift
-                        dset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
-    elif setting['type'] is 'n5' or setting['type'] is 'zarr':
+                        dataset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
+    elif output_file_type is 'n5' or output_file_type is 'zarr':
         # write into z5 or n5
-        use_zarr_format = (setting['type']=='zarr')
-        with z5py.File(outputFile, "w", use_zarr_format=use_zarr_format) as f:
-            dset = f.create_dataset(datasetName,
-                                    shape=volSize,
-                                    dtype=dtype,
-                                    chunks=chunkSize,
-                                    compression=compression_method,
-                                    **comp_opts)
+        use_zarr_format = (output_file_type=='zarr')
+        with z5py.File(output_file_name, "w", use_zarr_format=use_zarr_format) as f:
+            dataset = f.create_dataset(datasetName,
+                                       shape=volSizeAsTuple,
+                                       dtype=dtype,
+                                       chunks=chunkSizeAsTuple,
+                                       compression=compression_method,
+                                       **compression_options)
 
             # crop chunks from a tile read in tilelist
             f = partial(dump_single_tile_id,
-                        inputLoc=inputLoc,
-                        tileSize=tileSize,
-                        volReference=volReference,
-                        depthFull=depthFull,
-                        depthBase=depthBase,
-                        tilelist=tilelist,
-                        leafSize=leafSize,
-                        dset=dset)
+                        inputLoc=render_folder_name,
+                        tileSize=tile_shape,
+                        depthFull=leaf_level_count,
+                        depthBase=tile_level_count,
+                        tilelist=tile_hash,
+                        leafSize=leaf_shape,
+                        dataset=dataset)
             # list(map(f, tileids))
             with Pool(16) as pool :
                 # pool.map(f, tileids)
-                foo = list(tqdm.tqdm(pool.imap(f, tileids), total=len(tileids)))
+                foo = list(tqdm.tqdm(pool.imap(f, tile_id_list), total=len(tile_id_list)))
 

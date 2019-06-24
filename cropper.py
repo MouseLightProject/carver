@@ -7,25 +7,26 @@ import h5py
 import skimage.io as io
 import pickle
 
-def crop_from_render(data_fold, input_swc, output_folder, output_volume_file_name):
-    output_volume_file_path =  os.path.join(output_folder, output_volume_file_name)
+def crop_from_render(render_folder_name, input_swc_file_or_folder_name, output_folder_name, output_volume_file_name):
+    output_volume_file_path =  os.path.join(output_folder_name, output_volume_file_name)
 
-    params = util.readParameterFile(parameterfile=data_fold+"/calculated_parameters.jl")
+    params = util.readParameterFile(parameterfile=render_folder_name + "/calculated_parameters.jl")
     tile_level_count = params["nlevels"].astype(int)
     tile_shape = params["leafSize"].astype(int)
     origin_um = params["origin"]
     spacing_um = params["spacing"]
+    full_volume_shape = tile_shape * 2**tile_level_count
 
     # check if input argument is file or folder
-    if os.path.isfile(input_swc):
-        inputfolder, swc_name_w_ext = os.path.split(input_swc)
+    if os.path.isfile(input_swc_file_or_folder_name):
+        inputfolder, swc_name_w_ext = os.path.split(input_swc_file_or_folder_name)
         xyz_um, edges, R, offset, scale, header = util.readSWC(os.path.join(inputfolder, swc_name_w_ext))
-    elif os.path.isdir(input_swc):
-        inputfolder = input_swc
+    elif os.path.isdir(input_swc_file_or_folder_name):
+        inputfolder = input_swc_file_or_folder_name
         xyz_um, edges, R = util.appendSWCfolder(inputfolder) # somewhat redundant but cleaner
         xyz_um_, edges_, R_, filenames, header = util.readSWCfolder(inputfolder)
     else:
-        raise RuntimeError('%s does not seem to be a file, nor a folder' % input_swc)
+        raise RuntimeError('%s does not seem to be a file, nor a folder' % input_swc_file_or_folder_name)
 
     # Convert swc coords to voxels
     xyz_in_voxels = util.um2pix(xyz_um, origin_um, spacing_um)
@@ -40,11 +41,11 @@ def crop_from_render(data_fold, input_swc, output_folder, output_volume_file_nam
     #depthFull = params_p1["nlevels"].astype(int)
     #leaf_shape = params_p1["leafshape"].astype(int)
 
-    swc_base_name = os.path.basename(input_swc)
+    swc_base_name = os.path.basename(input_swc_file_or_folder_name)
     tile_list_pickle_file_name = '%s-tile-list.pickle' % swc_base_name
-    tile_list_pickle_file_path = os.path.join(output_folder, tile_list_pickle_file_name)
+    tile_list_pickle_file_path = os.path.join(output_folder_name, tile_list_pickle_file_name)
     try:
-        tilelist = pickle.load(open(tile_list_pickle_file_path, 'rb'))
+        tile_hash = pickle.load(open(tile_list_pickle_file_path, 'rb'))
         print('Loaded tile list from memo file')
     except os.error:
         octpath_cover = np.unique(octpath, axis=0)
@@ -63,49 +64,61 @@ def crop_from_render(data_fold, input_swc, output_folder, output_volume_file_nam
         #    print('Finished dilation iteration %d of %d' % (dilation_index+1, dilation_count))
         print('Done with dilation!')
 
-        tilelist = improc.chunklist(octpath_dilated, tile_level_count) #1..8
-        pickle.dump(tilelist, open(tile_list_pickle_file_path, 'wb'))
+        tile_hash = improc.chunklist(octpath_dilated, tile_level_count) #1..8
+        pickle.dump(tile_hash, open(tile_list_pickle_file_path, 'wb'))
 
-    #tileids = list(tilelist.keys())
+    #tileids = list(tile_hash.keys())
     # base on bounding box (results in cropped output volume)
     # gridReference = np.min(gridlist_dilated, axis=0)
     # gridSize = np.max(gridlist_dilated, axis=0) - gridReference +1
     # base on initial image
-    gridReference = np.array((0,0,0))
-    gridSize = tile_shape*(2**(tile_level_count))/leaf_shape
+    #gridReference = np.array((0,0,0))
+    #gridSize = full_volume_shape/leaf_shape
+    #   # 3-array, number of leaves in each dimension to make up the full volume
 
-    volReference = gridReference*leaf_shape
-    outVolumeSize = np.append(gridSize*leaf_shape,2) #append color channel
-    chunksize = np.append(leaf_shape,2)
+    #volReference = gridReference*leaf_shape
+    full_volume_shape_including_color_channel = np.append(full_volume_shape, 2)  # append color channel
+    chunk_shape_including_color_channel = np.append(leaf_shape, 2)
 
-    setting = dict()
-    setting['volSize'] = outVolumeSize
-    setting['chunkSize'] = chunksize
-    setting['depthBase'] = tile_level_count
-    setting['depthFull'] = leaf_level_count
-    setting['tileSize'] = tile_shape
-    setting['leaf_shape'] = leaf_shape
-    setting['volReference'] = volReference
-
-    setting['dtype'] = 'uint16'
+    # setting = dict()
+    # setting['volSize'] = full_volume_shape
+    # setting['chunkSize'] = chunksize
+    # setting['depthBase'] = tile_level_count
+    # setting['depthFull'] = leaf_level_count
+    # setting['tileSize'] = tile_shape
+    # setting['leaf_shape'] = leaf_shape
+    #
+    # setting['dtype'] = 'uint16'
 
     output_file_extension = os.path.splitext(output_volume_file_name)[1]
     if output_file_extension == '.h5' :
-        setting['type'] = 'h5'
-        setting['compression'] = "gzip"
-        setting['compression_opts'] = 9
+        output_file_type = 'h5'
+        compression_method = "gzip"
+        compression_options = 9
     elif output_file_extension == '.n5' :
-        setting['type'] = 'n5'
-        setting['compression'] = "gzip"
-        setting['compression_opts'] = {'level': 9}
+        output_file_type = 'n5'
+        compression_method = "gzip"
+        compression_options = {'level': 9}
     elif output_file_extension == '.zarr':
-        setting['type'] = 'zarr'
-        setting['compression'] = "blosc"
-        setting['compression_opts'] = {}
+        output_file_type = 'zarr'
+        compression_method = "blosc"
+        compression_options = {}
     else :
         raise RuntimeError('Don''t recognize the output file extension %s' % output_file_extension)
 
     # Finally, write the voxel carved data to disk
-    util.dump_write(data_fold, output_volume_file_path, setting, tilelist)
+    util.dump_write(render_folder_name,
+                    output_volume_file_path,
+                    tile_hash,
+                    full_volume_shape_including_color_channel,
+                    tile_shape,
+                    leaf_level_count,
+                    tile_level_count,
+                    leaf_shape,
+                    'uint16',
+                    chunk_shape_including_color_channel,
+                    compression_method,
+                    compression_options,
+                    output_file_type)
 
 # end def crop_from_render()
