@@ -272,7 +272,7 @@ def pix2um(xyz_voxels, origin_um, spacing_um):
 #                             dset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
 
 
-def dump_single_tile_id(tile_id, leaf_ids_within_tile, rendered_folder_path, tile_shape, tile_hash, leaf_shape, chunk_shape_with_color_as_tuple, dtype, dataset):
+def dump_single_tile_id(tile_id, leaf_ids_within_tile, rendered_folder_path, tile_shape, leaf_shape, chunk_shape_with_color_as_tuple, dtype, dataset):
     tilename = '/'.join(a for a in tile_id)
     tilepath = os.path.join(rendered_folder_path, tilename)
 
