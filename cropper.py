@@ -77,8 +77,9 @@ def crop_from_render(render_folder_name, input_swc_file_or_folder_name, output_f
     #   # 3-array, number of leaves in each dimension to make up the full volume
 
     #volReference = gridReference*leaf_shape
-    full_volume_shape_including_color_channel = np.append(full_volume_shape, 2)  # append color channel
-    chunk_shape_including_color_channel = np.append(leaf_shape, 2)
+    #full_volume_shape_including_color_channel = np.append(full_volume_shape, 2)  # append color channel
+    #chunk_shape_including_color_channel = np.append(leaf_shape, 2)
+    #chunk_shape_including_color_channel = np.append(tile_shape, 2)
 
     # setting = dict()
     # setting['volSize'] = full_volume_shape
@@ -107,16 +108,15 @@ def crop_from_render(render_folder_name, input_swc_file_or_folder_name, output_f
         raise RuntimeError('Don''t recognize the output file extension %s' % output_file_extension)
 
     # Finally, write the voxel carved data to disk
+    color_channel_count = 2
     util.dump_write(render_folder_name,
+                    full_volume_shape,
+                    'uint16',
+                    color_channel_count,
                     output_volume_file_path,
                     tile_hash,
-                    full_volume_shape_including_color_channel,
-                    tile_shape,
                     leaf_level_count,
                     tile_level_count,
-                    leaf_shape,
-                    'uint16',
-                    chunk_shape_including_color_channel,
                     compression_method,
                     compression_options,
                     output_file_type)

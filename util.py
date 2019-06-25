@@ -272,47 +272,57 @@ def pix2um(xyz_voxels, origin_um, spacing_um):
 #                             dset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
 
 
-def dump_single_tile_id(tile_id, inputLoc, tileSize, depthFull, depthBase, tilelist, leafSize, dataset):
+def dump_single_tile_id(tile_id, rendered_folder_path, tile_shape, tile_hash, leaf_shape, chunk_shape_with_color_as_tuple, dtype, dataset):
     tilename = '/'.join(a for a in tile_id)
-    tilepath = os.path.join(inputLoc, tilename)
+    tilepath = os.path.join(rendered_folder_path, tilename)
 
-    ijkTile = np.array(list(tile_id), dtype=int)
-    xyzTile = improc.oct2grid(ijkTile.reshape(1, len(ijkTile)))
-    locTile = xyzTile * tileSize
-    locShift = np.asarray(locTile, dtype=int).flatten()
+    tile_octree_path = np.array(list(tile_id), dtype=int)
+    tile_ijk_in_tile_grid = np.ndarray.flatten(improc.oct2grid(tile_octree_path.reshape(1, len(tile_octree_path))))
+    tile_origin_ijk = tile_ijk_in_tile_grid * tile_shape
+    tile_end_ijk = tile_origin_ijk + tile_shape
     if os.path.isdir(tilepath):
-
         im = improc.loadTiles(tilepath)
-        relativeDepth = depthFull - depthBase
+        # relativeDepth = leaf_level_count - tile_level_count
+        output_tile_stack = np.zeros(chunk_shape_with_color_as_tuple, dtype=dtype)
 
         # patches in idTiled
-        for patch in tilelist[tile_id]:
-            ijk = np.array(list(patch), dtype=int)
-            xyz = improc.oct2grid(ijk.reshape(1, len(ijk)))  # in 0 base
+        for leaf_octree_path_within_tile_as_string in tile_hash[tile_id]:
+            leaf_octree_path_within_tile = np.array(list(leaf_octree_path_within_tile_as_string), dtype=int)
+            leaf_ijk_in_leaf_grid_within_tile = improc.oct2grid(leaf_octree_path_within_tile.reshape(1, len(leaf_octree_path_within_tile)))  # in 0 base
 
-            start = np.ndarray.flatten(xyz * leafSize)
-            end = np.ndarray.flatten(start + leafSize)
-            # print(start,end)
-            imBatch = im[start[0]:end[0], start[1]:end[1], start[2]:end[2], :]
+            start = np.ndarray.flatten(leaf_ijk_in_leaf_grid_within_tile * leaf_shape)
+            end = np.ndarray.flatten(start + leaf_shape)
+            leaf_stack = im[start[0]:end[0], start[1]:end[1], start[2]:end[2], :]
+            output_tile_stack[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = leaf_stack
 
-            start = start + locShift
-            end = end + locShift
-            dataset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
-    #print('Done with tile id %s' % tile_id)
+        dataset[tile_origin_ijk[0]:tile_end_ijk[0], tile_origin_ijk[1]:tile_end_ijk[1], tile_origin_ijk[2]:tile_end_ijk[2], :] = output_tile_stack
 
 
-
-def dump_write(render_folder_name, output_file_name, tile_hash, full_volume_shape, tile_shape, leaf_level_count, tile_level_count, leaf_shape, dtype, chunk_shape, compression_method, compression_options, output_file_type):
-    # dumps volumetric data into h5/zarr
+def dump_write(render_folder_name,
+               full_volume_shape,
+               dtype,
+               color_channel_count,
+               output_file_name,
+               tile_hash,
+               leaf_level_count,
+               tile_level_count,
+               compression_method,
+               compression_options,
+               output_file_type):
+    # dumps volumetric data into h5/n5/zarr
     #self.inputLoc = inputloc
+
+    tile_shape = (full_volume_shape / (2**tile_level_count)).astype(int)
+    leaf_shape = (full_volume_shape / (2**leaf_level_count)).astype(int)
+
     # check if dataset name is provided
     splitted_name = output_file_name.split(':')
     if  len(splitted_name) == 1:
         output_file_name =  splitted_name[0]
-        datasetName =  "volume"
+        dataset_name =  "volume"
     elif len(splitted_name) ==2:
         output_file_name =  splitted_name[0]
-        datasetName =  splitted_name[1]
+        dataset_name =  splitted_name[1]
     else:
         raise ValueError('output file name has more than one ":"', output_file_name)
     #self.setting = setting
@@ -330,8 +340,11 @@ def dump_write(render_folder_name, output_file_name, tile_hash, full_volume_shap
     # chunkSize = tuple(map(int,setting['chunkSize']))
     # compression_method = setting['compression']
     # comp_opts = setting['compression_opts']
-    volSizeAsTuple = tuple(map(int, full_volume_shape))
-    chunkSizeAsTuple = tuple(map(int, chunk_shape))
+    chunk_shape = tile_shape
+    full_volume_shape_including_color_channel = np.append(full_volume_shape, color_channel_count)  # append color channel
+    chunk_shape_including_color_channel = np.append(chunk_shape, color_channel_count)
+    full_volume_shape_with_color_channels_as_tuple = tuple(map(int, full_volume_shape_including_color_channel))
+    chunk_shape_with_color_as_tuple = tuple(map(int, chunk_shape_including_color_channel))
 
     if output_file_type is 'h5':
         # write into h5
@@ -340,10 +353,10 @@ def dump_write(render_folder_name, output_file_name, tile_hash, full_volume_shap
             # for iter, xyz_ in enumerate(xyz_shifted):
             #     dset_swc[iter, :] = np.array(
             #         [edges[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges[iter, 1].__int__()])
-            dataset = f.create_dataset(datasetName,
-                                       volSizeAsTuple,
+            dataset = f.create_dataset(dataset_name,
+                                       full_volume_shape_with_color_channels_as_tuple,
                                        dtype=dtype,
-                                       chunks=chunkSizeAsTuple,
+                                       chunks=chunk_shape_with_color_as_tuple,
                                        compression=compression_method,
                                        compression_opts=compression_options)
 
@@ -351,53 +364,39 @@ def dump_write(render_folder_name, output_file_name, tile_hash, full_volume_shap
             # crop chuncks from a tile read in tilelist
             for iter, tile_id in enumerate(tile_id_list):
                 print('{} : {} out of {}'.format(tile_id, iter+1, len(tile_id_list)))
-                tilename = '/'.join(a for a in tile_id)
-                tilepath = os.path.join(render_folder_name, tilename)
+                dump_single_tile_id(tile_id,
+                                    render_folder_name,
+                                    tile_shape,
+                                    tile_hash,
+                                    leaf_shape,
+                                    chunk_shape_with_color_as_tuple,
+                                    dtype,
+                                    dataset)
 
-                ijkTile = np.array(list(tile_id), dtype=int)
-                xyzTile = improc.oct2grid(ijkTile.reshape(1, len(ijkTile)))
-                locTile = xyzTile * tile_shape
-                locShift = np.asarray(locTile, dtype=int).flatten()
-                if os.path.isdir(tilepath):
 
-                    im = improc.loadTiles(tilepath)
-                    relativeDepth = leaf_level_count - tile_level_count
-
-                    # patches in idTiled
-                    for patch in tile_hash[tile_id]:
-                        ijk = np.array(list(patch), dtype=int)
-                        xyz = improc.oct2grid(ijk.reshape(1, len(ijk)))  # in 0 base
-
-                        start = np.ndarray.flatten(xyz * leaf_shape)
-                        end = np.ndarray.flatten(start + leaf_shape)
-                        # print(start,end)
-                        imBatch = im[start[0]:end[0], start[1]:end[1], start[2]:end[2], :]
-
-                        start = start + locShift
-                        end = end + locShift
-                        dataset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
     elif output_file_type is 'n5' or output_file_type is 'zarr':
         # write into z5 or n5
         use_zarr_format = (output_file_type=='zarr')
         with z5py.File(output_file_name, "w", use_zarr_format=use_zarr_format) as f:
-            dataset = f.create_dataset(datasetName,
-                                       shape=volSizeAsTuple,
+            dataset = f.create_dataset(dataset_name,
+                                       shape=full_volume_shape_with_color_channels_as_tuple,
                                        dtype=dtype,
-                                       chunks=chunkSizeAsTuple,
+                                       chunks=chunk_shape_with_color_as_tuple,
                                        compression=compression_method,
                                        **compression_options)
 
             # crop chunks from a tile read in tilelist
             f = partial(dump_single_tile_id,
-                        inputLoc=render_folder_name,
-                        tileSize=tile_shape,
-                        depthFull=leaf_level_count,
-                        depthBase=tile_level_count,
-                        tilelist=tile_hash,
-                        leafSize=leaf_shape,
+                        rendered_folder_path=render_folder_name,
+                        tile_shape=tile_shape,
+                        tile_hash=tile_hash,
+                        leaf_shape=leaf_shape,
+                        chunk_shape_with_color_as_tuple=chunk_shape_with_color_as_tuple,
+                        dtype=dtype,
                         dataset=dataset)
-            # list(map(f, tileids))
             with Pool(16) as pool :
-                # pool.map(f, tileids)
                 foo = list(tqdm.tqdm(pool.imap(f, tile_id_list), total=len(tile_id_list)))
+            # for tile_id in tqdm.tqdm(tile_id_list):
+            #     f(tile_id)
+
 
