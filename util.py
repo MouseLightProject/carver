@@ -272,7 +272,7 @@ def pix2um(xyz_voxels, origin_um, spacing_um):
 #                             dset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
 
 
-def dump_single_tile_id(tile_id, rendered_folder_path, tile_shape, tile_hash, leaf_shape, chunk_shape_with_color_as_tuple, dtype, dataset):
+def dump_single_tile_id(tile_id, leaf_ids_within_tile, rendered_folder_path, tile_shape, tile_hash, leaf_shape, chunk_shape_with_color_as_tuple, dtype, dataset):
     tilename = '/'.join(a for a in tile_id)
     tilepath = os.path.join(rendered_folder_path, tilename)
 
@@ -286,7 +286,7 @@ def dump_single_tile_id(tile_id, rendered_folder_path, tile_shape, tile_hash, le
         output_tile_stack = np.zeros(chunk_shape_with_color_as_tuple, dtype=dtype)
 
         # patches in idTiled
-        for leaf_octree_path_within_tile_as_string in tile_hash[tile_id]:
+        for leaf_octree_path_within_tile_as_string in leaf_ids_within_tile:
             leaf_octree_path_within_tile = np.array(list(leaf_octree_path_within_tile_as_string), dtype=int)
             leaf_ijk_in_leaf_grid_within_tile = improc.oct2grid(leaf_octree_path_within_tile.reshape(1, len(leaf_octree_path_within_tile)))  # in 0 base
 
@@ -372,8 +372,6 @@ def dump_write(render_folder_name,
                                     chunk_shape_with_color_as_tuple,
                                     dtype,
                                     dataset)
-
-
     elif output_file_type is 'n5' or output_file_type is 'zarr':
         # write into z5 or n5
         use_zarr_format = (output_file_type=='zarr')
@@ -384,19 +382,17 @@ def dump_write(render_folder_name,
                                        chunks=chunk_shape_with_color_as_tuple,
                                        compression=compression_method,
                                        **compression_options)
-
-            # crop chunks from a tile read in tilelist
             f = partial(dump_single_tile_id,
                         rendered_folder_path=render_folder_name,
                         tile_shape=tile_shape,
-                        tile_hash=tile_hash,
                         leaf_shape=leaf_shape,
                         chunk_shape_with_color_as_tuple=chunk_shape_with_color_as_tuple,
                         dtype=dtype,
                         dataset=dataset)
-            with Pool(16) as pool :
-                foo = list(tqdm.tqdm(pool.imap(f, tile_id_list), total=len(tile_id_list)))
-            # for tile_id in tqdm.tqdm(tile_id_list):
-            #     f(tile_id)
+            #with Pool(16) as pool :
+            #    foo = list(tqdm.tqdm(pool.imap(f, tile_id_list), total=len(tile_id_list)))
+            for tile_id in tqdm.tqdm(tile_id_list):
+                leaf_id_within_tile = tile_hash[tile_id]
+                f(tile_id, leaf_id_within_tile)
 
 
