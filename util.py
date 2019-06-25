@@ -364,10 +364,11 @@ def dump_write(render_folder_name,
             # crop chuncks from a tile read in tilelist
             for iter, tile_id in enumerate(tile_id_list):
                 print('{} : {} out of {}'.format(tile_id, iter+1, len(tile_id_list)))
+                leaf_id_within_tile = tile_hash[tile_id]
                 dump_single_tile_id(tile_id,
+                                    leaf_id_within_tile,
                                     render_folder_name,
                                     tile_shape,
-                                    tile_hash,
                                     leaf_shape,
                                     chunk_shape_with_color_as_tuple,
                                     dtype,
