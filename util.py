@@ -9,6 +9,11 @@ from skimage.transform import resize
 import warnings
 import z5py
 import tqdm
+from dask_jobqueue import LSFCluster
+from dask.distributed import Client, LocalCluster
+from dask.distributed import fire_and_forget
+from dask.distributed import wait
+import getpass
 
 from collections import defaultdict
 import improc
@@ -151,7 +156,8 @@ def readSWC(swcfile, scale=1.0):
     xyz = lines[:,2:5]
     xyz = xyz + offset
     xyz = xyz/scale
-    return (xyz,edges,R,offset,scale,header)
+    structure_identifier = lines[:,1]
+    return (xyz,edges,R,offset,scale,header,structure_identifier)
 
 def upsampleSWC(xyz, edges, sp):
     if xyz.shape[0]==1:
@@ -182,94 +188,6 @@ def um2pix(xyz_um, origin_um, spacing_um):
 def pix2um(xyz_voxels, origin_um, spacing_um):
     #return(np.dot(A, xyz_voxels))
     return( spacing_um*xyz_voxels + origin_um )
-
-# def pix2oct(xyz,dims,depth):
-#     # for a given xyz, box size and depth, returns the location int the patch and patch path
-#     res = dims/depth
-#     ijk = np.floor(xyz/res)
-#     # convert ijk to
-#     return 0
-#
-#
-# def um2oct(xyz,dims,transform ):
-#     # for a given um, transform and image size, returns the patch location
-#     return 0
-#
-#
-# def traverseOct():
-#     # lets you to traverse octree
-#     return 0
-
-
-# class dumper(object):
-#     # dumps volumetric data into h5/zarr
-#     def __init__(self, inputloc, outputFile, setting, tilelist=None):
-#         self.inputLoc = inputloc
-#         # check if dataset name is provided
-#         splitted_name = outputFile.split(':')
-#         if  len(splitted_name) == 1:
-#             self.outputFile =  splitted_name[0]
-#             self.datasetName =  "volume"
-#         elif len(splitted_name) ==2:
-#             self.outputFile =  splitted_name[0]
-#             self.datasetName =  splitted_name[1]
-#         else:
-#             raise ValueError('output file name has more than one ":"', outputFile)
-#         self.setting = setting
-#         self.tilelist = tilelist
-#         if tilelist:
-#             self.tileids = list(tilelist.keys())
-#
-#     def write(self):
-#         if self.setting['type'] is 'h5':
-#             # write into h5
-#             tileids = self.tileids
-#             inputLoc = self.inputLoc
-#             outputFile = self.outputFile
-#             tilelist = self.tilelist
-#             setting = self.setting
-#             volSize = setting['volSize']
-#             tileSize = setting['tileSize']
-#             volReference = setting['volReference']
-#             depthFull = setting['depthFull']
-#             depthBase = setting['depthBase']
-#             leafSize = setting['leafSize']
-#
-#             with h5py.File(outputFile, "a") as f:
-#                 # dset_swc = f.create_dataset("reconstruction", (xyz_shifted.shape[0], 7), dtype='f')
-#                 # for iter, xyz_ in enumerate(xyz_shifted):
-#                 #     dset_swc[iter, :] = np.array(
-#                 #         [edges[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges[iter, 1].__int__()])
-#                 dset = f.create_dataset(self.datasetName, volSize, dtype=setting['dtype'], chunks=setting['chunkSize'],
-#                                         compression=setting['compression'], compression_opts=setting['compression_opts'])
-#                 # crop chuncks from a tile read in tilelist
-#                 for iter, idTile in enumerate(tileids):
-#                     print('{} : {} out of {}'.format(idTile, iter, len(tileids)))
-#                     tilename = '/'.join(a for a in idTile)
-#                     tilepath = os.path.join(inputLoc, tilename)
-#
-#                     ijkTile = np.array(list(idTile), dtype=int)
-#                     xyzTile = improc.oct2grid(ijkTile.reshape(1, len(ijkTile)))
-#                     locTile = xyzTile * tileSize
-#                     locShift = np.asarray(locTile - volReference, dtype=int).flatten()
-#                     if os.path.isdir(tilepath):
-#
-#                         im = improc.loadTiles(tilepath)
-#                         relativeDepth = depthFull - depthBase
-#
-#                         # patches in idTiled
-#                         for patch in tilelist[idTile]:
-#                             ijk = np.array(list(patch), dtype=int)
-#                             xyz = improc.oct2grid(ijk.reshape(1, len(ijk)))  # in 0 base
-#
-#                             start = np.ndarray.flatten(xyz * leafSize)
-#                             end = np.ndarray.flatten(start + leafSize)
-#                             # print(start,end)
-#                             imBatch = im[start[0]:end[0], start[1]:end[1], start[2]:end[2], :]
-#
-#                             start = start + locShift
-#                             end = end + locShift
-#                             dset[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = imBatch
 
 
 def dump_single_tile_id(tile_id, leaf_ids_within_tile, rendered_folder_path, tile_shape, leaf_shape, chunk_shape_with_color_as_tuple, dtype, dataset):
@@ -328,6 +246,7 @@ def dump_write(render_folder_name,
     #self.setting = setting
     #self.tilelist = tilelist
     tile_id_list = list(tile_hash.keys())
+    leaf_ids_per_tile_list = list(tile_hash.values())
 
     # # Unpack the settings
     # volSize = tuple(map(int,setting['volSize']))
@@ -375,25 +294,41 @@ def dump_write(render_folder_name,
                                     dataset)
     elif output_file_type is 'n5' or output_file_type is 'zarr':
         # write into z5 or n5
-        use_zarr_format = (output_file_type=='zarr')
-        with z5py.File(output_file_name, "w", use_zarr_format=use_zarr_format) as f:
-            dataset = f.create_dataset(dataset_name,
-                                       shape=full_volume_shape_with_color_channels_as_tuple,
-                                       dtype=dtype,
-                                       chunks=chunk_shape_with_color_as_tuple,
-                                       compression=compression_method,
-                                       **compression_options)
-            f = partial(dump_single_tile_id,
-                        rendered_folder_path=render_folder_name,
-                        tile_shape=tile_shape,
-                        leaf_shape=leaf_shape,
-                        chunk_shape_with_color_as_tuple=chunk_shape_with_color_as_tuple,
-                        dtype=dtype,
-                        dataset=dataset)
-            #with Pool(16) as pool :
-            #    foo = list(tqdm.tqdm(pool.imap(f, tile_id_list), total=len(tile_id_list)))
-            for tile_id in tqdm.tqdm(tile_id_list):
-                leaf_id_within_tile = tile_hash[tile_id]
-                f(tile_id, leaf_id_within_tile)
+        username = getpass.getuser()
+        scratch_folder_path = '/scratch/%s' % username
+        with LSFCluster(cores=1, memory='15 GB', local_dir=scratch_folder_path) as cluster:
+            cluster.adapt(minimum=1, maximum=1000)
+            #cluster = LocalCluster(n_workers=4, threads_per_worker=1)
+            #cluster.scale(1000)
+            with Client(cluster) as client:
+                use_zarr_format = (output_file_type=='zarr')
+                with z5py.File(output_file_name, "w", use_zarr_format=use_zarr_format) as f:
+                    dataset = f.create_dataset(dataset_name,
+                                               shape=full_volume_shape_with_color_channels_as_tuple,
+                                               dtype=dtype,
+                                               chunks=chunk_shape_with_color_as_tuple,
+                                               compression=compression_method,
+                                               **compression_options)
+                    two_arg_dump_single_tile_id = \
+                        partial(dump_single_tile_id,
+                                rendered_folder_path=render_folder_name,
+                                tile_shape=tile_shape,
+                                leaf_shape=leaf_shape,
+                                chunk_shape_with_color_as_tuple=chunk_shape_with_color_as_tuple,
+                                dtype=dtype,
+                                dataset=dataset)
+                    #with Pool(16) as pool :
+                    #    foo = list(tqdm.tqdm(pool.imap(f, tile_id_list), total=len(tile_id_list)))
+                    # for tile_id in tqdm.tqdm(tile_id_list):
+                    #     leaf_id_within_tile = tile_hash[tile_id]
+                    #     f(tile_id, leaf_id_within_tile)
+                    
+                    futures = client.map(two_arg_dump_single_tile_id, tile_id_list, leaf_ids_per_tile_list)
+                    wait(futures)
+
+                    #for tile_id in tile_id_list:
+                    #    leaf_id_within_tile = tile_hash[tile_id]
+                    #    this_future = client.submit(f, tile_id, leaf_id_within_tile)
+                    #    fire_and_forget(this_future)
 
 

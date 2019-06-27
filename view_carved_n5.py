@@ -11,7 +11,8 @@ def zero_based_ijk_from_xyz(sample_point_xyz, origin, spacing):
     return (np.floor((sample_point_xyz - origin) / spacing)).astype('int')
 
 octree_path = '/nrs/mouselight/SAMPLES/2018-10-01'
-n5_file_path = '/home/taylora/cache/gt/2018-10-01/navigator-output/test-swcs-carved.n5'
+#n5_file_path = '/home/taylora/cache/gt/2018-10-01/navigator-output/test-swcs-carved.n5'
+n5_file_path = '/groups/scicompsoft/home/taylora/cache/gt/2018-10-01/navigator-output/test-swcs-carved.n5'
 #offset = [75445.691517998261       16536.315191998805       36051.105973001562]   # soma 1
 offset = np.array([75885.516008994338,      15382.253859001321,       35947.93727700039])   # soma 2
 #sample_point_xyz_centered = [2074.0422090017528      -684.41304799880709    1333.5478669984368] ;  # soma 1
