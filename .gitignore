@@ -7,3 +7,4 @@ virtenv/
 env/
 __pycache__
 .idea/workspace.xml
+scratch.txt

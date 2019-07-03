@@ -1,13 +1,10 @@
 import improc
 import os
 import util
-import re
 import numpy as np
-import h5py
-import skimage.io as io
 import pickle
 
-def crop_from_render(render_folder_name, input_swc_file_or_folder_name, output_folder_name, output_volume_file_name):
+def crop_from_render(render_folder_name, input_swc_file_or_folder_name, output_folder_name, output_volume_file_name, do_use_simple_for_loop=False):
     output_volume_file_path =  os.path.join(output_folder_name, output_volume_file_name)
 
     params = util.readParameterFile(parameterfile=render_folder_name + "/calculated_parameters.jl")
@@ -36,7 +33,7 @@ def crop_from_render(render_folder_name, input_swc_file_or_folder_name, output_f
     extra_level_count = 3
     leaf_level_count = tile_level_count + extra_level_count
     leaf_shape = (tile_shape / (2**extra_level_count)).astype(int)
-    octpath, xres = improc.xyz2oct(xyz_in_voxels, leaf_level_count, leaf_shape)
+    octpath, xres = improc.ijk2oct(xyz_in_voxels, leaf_level_count, leaf_shape)
 
     #depthFull = params_p1["nlevels"].astype(int)
     #leaf_shape = params_p1["leafshape"].astype(int)
@@ -119,6 +116,7 @@ def crop_from_render(render_folder_name, input_swc_file_or_folder_name, output_f
                     tile_level_count,
                     compression_method,
                     compression_options,
-                    output_file_type)
+                    output_file_type,
+                    do_use_simple_for_loop)
 
 # end def crop_from_render()

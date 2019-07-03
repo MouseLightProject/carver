@@ -11,13 +11,20 @@ def zero_based_ijk_from_xyz(sample_point_xyz, origin, spacing):
     return (np.floor((sample_point_xyz - origin) / spacing)).astype('int')
 
 octree_path = '/nrs/mouselight/SAMPLES/2018-10-01'
+
 #n5_file_path = '/home/taylora/cache/gt/2018-10-01/navigator-output/test-swcs-carved.n5'
-n5_file_path = '/groups/scicompsoft/home/taylora/cache/gt/2018-10-01/navigator-output/test-swcs-carved.n5'
+#n5_file_path = '/groups/scicompsoft/home/taylora/cache/gt/2018-10-01/navigator-output/test-swcs-carved.n5'
 #offset = [75445.691517998261       16536.315191998805       36051.105973001562]   # soma 1
-offset = np.array([75885.516008994338,      15382.253859001321,       35947.93727700039])   # soma 2
+#offset = np.array([75885.516008994338,      15382.253859001321,       35947.93727700039])   # soma 2
 #sample_point_xyz_centered = [2074.0422090017528      -684.41304799880709    1333.5478669984368] ;  # soma 1
-sample_point_xyz_centered = np.array([1157.5993180056539,       11.56324699867946,      1683.9443079996054])   # soma 2
+#sample_point_xyz_centered = np.array([1157.5993180056539,       11.56324699867946,      1683.9443079996054])   # soma 2
 #sample_point_xyz_centered = [738.19657500174071      -1424.7829449988058       702.41362699843739] ;
+
+n5_file_path = '/nrs/mouselight/cluster/navigator-output/2018-10-01-tile-chunks-on-cluster/consensus-neurons-with-machine-centerpoints-labelled-as-swcs-carved.n5'
+offset = np.array([75621.168080000323,       16211.625832000847,       36208.061435002361])   # G-040
+sample_point_xyz_centered = np.array([-501.96361500032071,      -1013.1980690008477,      -4455.3761980023555])   # G-040 centerpoint 33650
+
+# offset the sample point
 sample_point_xyz = sample_point_xyz_centered + offset
 
 #[origin, spacing] = load_transform_txt(fullfile(octree_path, 'transform.txt')) ;
@@ -46,5 +53,11 @@ raw_stack_4d = dset[stack_lower_corner[0]:stack_upper_corner[0],
 stack = np.squeeze(raw_stack_4d, axis=3)
 
 slice = stack[:,:,256]
-imgplot = plt.imshow(slice)
+imgplot = plt.imshow(slice.T)
+
+(m,n) = slice.shape
+central_radius = 4
+central_slice = slice[int(m/2)-central_radius:int(m/2)+central_radius, int(n/2)-central_radius:int(n/2)+central_radius]
+imgplot2 = plt.imshow(central_slice.T)
+
 plt.show()

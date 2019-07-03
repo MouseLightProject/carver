@@ -22,35 +22,79 @@ def snapLoc(I,nploc,w=1):
     return nplocupdated
 
 
-def xyz2oct(xyz, nlevel, leafsize):
-    # converts xyz location to oct location
+def ijk2oct(ijk, level_count, chunk_shape):
+    # converts ijk location to oct location
     # ALT: params['nlevels'] is the number of levels in the octree, i.e. the length of the path to a leaf stack
-    # ALT: params['leafshape'] is the shape of the leaf stacks in the octree, in xyz order
-    # ALT: xyz is in voxels, and is zero-based
-    # ALT" xyz is n x 3
-    # ALT: Returns two things: First is the octree path, an n x nlevels array, row i the path to the leaf stack for xyz[i]
-    # ALT:                     Second n x 3, row i giving the xyz position in the leaf stack for xyz[i]
-    if len(xyz.shape) ==1:
-        xyz=xyz[None,:]
+    # ALT: params['leafshape'] is the shape of the leaf stacks in the octree, in ijk/xyz order
+    # ALT: ijk is in voxels, and is zero-based.  Values should be integral, although the type need not be, I don't think.
+    # ALT" ijk is n x 3
+    # ALT: chunk_shape is the chunk shape at the bottom level of the tree, i.e. the most zoomed-in level
+    # ALT: Returns two things: First is the octree path, an n x nlevels array, row i the path to the leaf stack for ijk[i]
+    # ALT:                     Second n x 3, row i giving the ijk position in the leaf stack for ijk[i]
+    if ijk.ndim==1:
+        did_promote = True
+        ijk = ijk[None,:]  # convert vector to a single-row matrix
+    else:
+        did_promote = False
 
-    nlevel = np.int(nlevel)
-    #leafsize = params['leafshape']
-    octpath = np.zeros((xyz.shape[0],nlevel))
-    xres = np.zeros((xyz.shape[0],3))
-    for idx in range(xyz.shape[0]):
+    level_count = np.int(level_count)
+    #chunk_shape = params['leafshape']
+    row_count = ijk.shape[0]
+    octpath = np.zeros((row_count,level_count), dtype='int64')
+    ijk_within_chunk = np.zeros((row_count,3), dtype='int64')
+    for idx in range(row_count):
         bits = []
-        x = xyz[idx]
-        u = leafsize
-        for n in range(nlevel-1,-1,-1):
-            bn = 2**n*u
-            th = x>bn
+        ijk_this = ijk[idx]
+        #u = chunk_shape
+        for n in range(level_count-1,-1,-1):
+            bn = (2**n)*chunk_shape
+            th = ijk_this>bn
             bits.append(th)
-            x = x - bn*th
+            ijk_this = ijk_this - bn*th
         # convert to octodigit
-        octpath[idx,:] = (1+ np.sum(np.array(bits)*2**np.array([0,1,2]),axis=1))[None,:]
-        xres[idx,:] = x
+        octpath[idx,:] = (1 + np.sum(np.array(bits)*2**np.array([0,1,2]),axis=1))[None,:]
+        ijk_within_chunk[idx,:] = ijk_this
 
-    return octpath.astype(int),xres
+    if did_promote:
+        # demote back to vectors
+        octpath = np.ndarray.flatten(octpath)
+        ijk_within_chunk = np.ndarray.flatten(ijk_within_chunk)
+
+    return octpath, ijk_within_chunk
+
+
+# def xyz2oct(xyz_in_voxels, level_count, leaf_shape):
+#     # converts xyz location to oct location
+#     # ALT: params['nlevels'] is the number of levels in the octree, i.e. the length of the path to a leaf stack
+#     # ALT: params['leafshape'] is the shape of the leaf stacks in the octree, in xyz order
+#     # ALT: xyz is in voxels, and is zero-based
+#     # ALT" xyz is n x 3
+#     # ALT: Returns two things: First is the octree path, an n x nlevels array, row i the path to the leaf stack for xyz[i]
+#     # ALT:                     Second n x 3, row i giving the xyz position in the leaf stack for xyz[i]
+#
+#     # If xyz_in_voxels is a vector, convert to a one-row matrix
+#     if len(xyz_in_voxels.shape)==1:
+#         xyz_in_voxels= xyz_in_voxels[None, :]
+#
+#     level_count = np.int(level_count)
+#     row_count = xyz_in_voxels.shape[0]
+#     octpath = np.zeros((row_count, level_count))
+#     xres = np.zeros((row_count, 3))
+#     for row_index in range(row_count):
+#         bits = []
+#         x = xyz_in_voxels[row_index]
+#         u = leaf_shape
+#         for n in range(level_count - 1, -1, -1):
+#             bn = (2**n)*u
+#             th = x>bn
+#             bits.append(th)
+#             x = x - bn*th
+#         # convert to octodigit
+#         octpath[row_index,:] = (1+ np.sum(np.array(bits)*2**np.array([0,1,2]),axis=1))[None,:]
+#         xres[row_index,:] = x
+#
+#     return octpath.astype(int),xres
+
 
 def to_base_3(n):
     s = ""

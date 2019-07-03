@@ -5,11 +5,9 @@ import util
 import numpy as np
 import cropper
 import os
-import sys, getopt
-import stat
+import sys
+import getopt
 import h5py
-
-import shutil
 
 def sample_spherical(npoints, ndim=3):
     vec = np.random.randn(ndim, npoints)
@@ -78,12 +76,13 @@ def main(argv):
     additional_level_count = 3
 
     try:
-        opts, args = getopt.getopt(argv,"hi:s:o:j:",["data_fold=","input_swc_file=","output_folder=","octree_folder="])
+        opts, args = getopt.getopt(argv, "i:s:o:j:f", ["data_fold=","input_swc_file=","output_folder=","octree_folder=","for"])
     except getopt.GetoptError:
-        print('navigator.py -i <data_folder> -s <swc_file> -o <output_folder> -h <OPT:number_of_level> -j <OPT:octree_folder>')
+        print('navigator.py -i <data_folder> -s <swc_file> -o <output_folder> -j <OPT:octree_folder>')
         sys.exit(2)
 
 
+    do_use_simple_for_loop = False
     for opt, arg in opts:
         print('opt:', opt,'arg:', arg)
         if opt == '-h':
@@ -99,6 +98,8 @@ def main(argv):
             octree_folder = os.path.join(output_folder,'JW')
         elif opt in ("-h", "--number_of_level"):
             additional_level_count = arg
+        elif opt in ('-f', '--for'):
+            do_use_simple_for_loop = True
         elif opt in ("-j", "--octree_folder"):
             try:
                 octree_folder
@@ -109,10 +110,11 @@ def main(argv):
 
 
 
-    print('SWC FILE   :', input_swc_file)
-    print('DATA FOLDER   :', render_folder_name)
-    print('OUTPUT FOLDER    :', output_folder)
+    print('SWC FILE                  :', input_swc_file)
+    print('DATA FOLDER               :', render_folder_name)
+    print('OUTPUT FOLDER             :', output_folder)
     print('ADDITIONAL LEVEL COUNT    :', additional_level_count)
+    print('do_use_simple_for_loop    :', do_use_simple_for_loop)
     #print('OCTREEFOLDER    :', octree_folder)
 
 
@@ -127,7 +129,7 @@ def main(argv):
     #JW_output_folder = os.path.join(output_folder,'JW')
 
     # if not os.path.exists(JW_output_folder):
-    cropper.crop_from_render(render_folder_name, input_swc_file, output_folder, output_volume_file_name)
+    cropper.crop_from_render(render_folder_name, input_swc_file, output_folder, output_volume_file_name, do_use_simple_for_loop)
 
     # # shutil.rmtree(JW_output_folder)
     # if not os.path.exists(JW_output_folder):
