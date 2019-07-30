@@ -4,6 +4,8 @@ import util
 import numpy as np
 import pickle
 
+
+
 def crop_from_render(render_folder_name, input_swc_file_or_folder_name, output_folder_name, output_volume_file_name, do_use_simple_for_loop=False):
     output_volume_file_path =  os.path.join(output_folder_name, output_volume_file_name)
 
@@ -50,8 +52,8 @@ def crop_from_render(render_folder_name, input_swc_file_or_folder_name, output_f
 
         print('About to start dilation...')
         #octpath_dilated = octpath_cover.copy()
-        desired_carve_out_half_diagonal_as_scalar = 512
-        desired_carve_out_half_diagonal = desired_carve_out_half_diagonal_as_scalar * np.array([1.0, 1.0, 1.0/4.0])
+        desired_carve_out_half_diagonal_as_scalar = 512  # in x,y.  z will be different
+        desired_carve_out_half_diagonal = desired_carve_out_half_diagonal_as_scalar * np.array([1.0, 1.0, spacing_um[0]/spacing_um[2]])
         #dilation_count = 8
         dilation_count = np.max( np.ceil(desired_carve_out_half_diagonal.astype(float) / leaf_shape.astype(float)) ).astype(int).item()
         # should be enough to get about a 512 vx cube around each swc centerpoint
