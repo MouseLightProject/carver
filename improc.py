@@ -195,7 +195,7 @@ def dilateOct(octpath,width=1):
     # dilates the octpath with the given search widty
     # 1/2/3 with width 1 -> 1/2/3 | 2/2/3 | 1/1/3 | 1/3/3 | ... | 2/3/4
     depth = octpath.shape[1]
-    numpath = octpath.shape[0]
+    #numpath = octpath.shape[0]
     ix, iy, iz = np.mgrid[-width:width+1, -width:width+1, -width:width+1]
     ixyz = np.stack((ix.flatten(), iy.flatten(), iz.flatten()), axis=1)
     alltiles = []
@@ -208,17 +208,19 @@ def dilateOct(octpath,width=1):
         alltiles = np.squeeze(alltiles[0])
     else:
         alltiles = np.squeeze(np.concatenate(alltiles, axis=1))
+        
     # delete any out of bound tiles
     deletethese = np.any(np.logical_or(alltiles < 0, alltiles > 2**depth-1), axis=1)
     alltiles = np.delete(alltiles,(np.where(deletethese)),axis=0)
 
     # unique entries
-    alltiles = np.unique(alltiles,axis=0)
+    alltiles_unique = np.unique(alltiles, axis=0)
+    
     # convert to octpaths
-    octlist = [grid2oct(tileid[None,:], depth) for tileid in alltiles]
+    octlist = [grid2oct(tileid[None,:], depth) for tileid in alltiles_unique]
     octlist = np.concatenate(octlist, axis=0)
 
-    return octlist,alltiles
+    return octlist, alltiles_unique
 
 # def boundingboxOctree(xyz,params):
 #     # finds the bounding box of point cloud wrto octree
