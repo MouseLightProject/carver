@@ -8,3 +8,10 @@ env/
 __pycache__
 .idea/workspace.xml
 scratch.txt
+global.lock
+purge.lock
+*.stdout
+*.stderr
+*.stdouterr
+2018-08-01
+2018-10-01
