@@ -182,169 +182,206 @@ def pix2um(xyz_voxels, origin_um, spacing_um):
     return( spacing_um*xyz_voxels + origin_um )
 
 
-def dump_single_tile_id(tile_id, leaf_ids_within_tile, rendered_folder_path, tile_shape, leaf_shape, chunk_shape_with_color_as_tuple, dtype, dataset):
-    tilename = '/'.join(a for a in tile_id)
-    tilepath = os.path.join(rendered_folder_path, tilename)
+# def dump_single_tile_id(tile_id, 
+#                         leaf_ids_within_tile, 
+#                         rendered_folder_path, 
+#                         tile_shape, 
+#                         leaf_shape, 
+#                         chunk_shape_with_color_as_tuple, 
+#                         dtype, 
+#                         dataset, 
+#                         is_dataset_transposed):
+#     tilename = '/'.join(a for a in tile_id)
+#     tilepath = os.path.join(rendered_folder_path, tilename)
 
-    tile_octree_path = np.array(list(tile_id), dtype=int)
-    tile_ijk_in_tile_grid = np.ndarray.flatten(improc.oct2grid(tile_octree_path.reshape(1, len(tile_octree_path))))
-    tile_origin_ijk = tile_ijk_in_tile_grid * tile_shape
-    tile_end_ijk = tile_origin_ijk + tile_shape
-    if os.path.isdir(tilepath):
-        tile_ijk_in_tile_grid_as_tuple = tuple(tile_ijk_in_tile_grid)
-        does_chunk_exist = dataset.chunk_exists(tile_ijk_in_tile_grid_as_tuple+(0,))  # dataset includes color channels
-        if not does_chunk_exist:
-            im = improc.loadTiles(tilepath)
-            # relativeDepth = leaf_level_count - tile_level_count
-            output_tile_stack = np.zeros(chunk_shape_with_color_as_tuple, dtype=dtype)
+#     tile_octree_path = np.array(list(tile_id), dtype=int)
+#     tile_ijk_in_tile_grid = np.ndarray.flatten(improc.oct2grid(tile_octree_path.reshape(1, len(tile_octree_path))))
+#     tile_origin_ijk = tile_ijk_in_tile_grid * tile_shape
+#     tile_end_ijk = tile_origin_ijk + tile_shape
+#     if os.path.isdir(tilepath):
+#         tile_ijk_in_tile_grid_as_tuple = tuple(tile_ijk_in_tile_grid)
+#         tile_ijk_in_tile_grid_as_tuple_with_color = tile_ijk_in_tile_grid_as_tuple + (0,)  # dataset includes color channels
+#         if is_dataset_transposed:
+#             tile_ijk_in_tile_grid_as_tuple_with_color_maybe_flipped = tuple(reversed(tile_ijk_in_tile_grid_as_tuple_with_color)) 
+#         else:
+#             tile_ijk_in_tile_grid_as_tuple_with_color_maybe_flipped = tile_ijk_in_tile_grid_as_tuple_with_color
+#         does_chunk_exist = dataset.chunk_exists(tile_ijk_in_tile_grid_as_tuple_with_color_maybe_flipped)
+#         if not does_chunk_exist:
+#             im = improc.loadTiles(tilepath)
+#             # relativeDepth = leaf_level_count - tile_level_count
+#             output_tile_stack = np.zeros(chunk_shape_with_color_as_tuple, dtype=dtype)
 
-            # patches in idTiled
-            for leaf_octree_path_within_tile_as_string in leaf_ids_within_tile:
-                leaf_octree_path_within_tile = np.array(list(leaf_octree_path_within_tile_as_string), dtype=int)
-                leaf_ijk_in_leaf_grid_within_tile = improc.oct2grid(leaf_octree_path_within_tile.reshape(1, len(leaf_octree_path_within_tile)))  # in 0 base
+#             # patches in idTiled
+#             for leaf_octree_path_within_tile_as_string in leaf_ids_within_tile:
+#                 leaf_octree_path_within_tile = np.array(list(leaf_octree_path_within_tile_as_string), dtype=int)
+#                 leaf_ijk_in_leaf_grid_within_tile = improc.oct2grid(leaf_octree_path_within_tile.reshape(1, len(leaf_octree_path_within_tile)))  # in 0 base
 
-                start = np.ndarray.flatten(leaf_ijk_in_leaf_grid_within_tile * leaf_shape)
-                end = np.ndarray.flatten(start + leaf_shape)
-                leaf_stack = im[start[0]:end[0], start[1]:end[1], start[2]:end[2], :]
-                output_tile_stack[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = leaf_stack
+#                 start = np.ndarray.flatten(leaf_ijk_in_leaf_grid_within_tile * leaf_shape)
+#                 end = np.ndarray.flatten(start + leaf_shape)
+#                 leaf_stack = im[start[0]:end[0], start[1]:end[1], start[2]:end[2], :]
+#                 output_tile_stack[start[0]:end[0], start[1]:end[1], start[2]:end[2], :] = leaf_stack
 
-            dataset[tile_origin_ijk[0]:tile_end_ijk[0], tile_origin_ijk[1]:tile_end_ijk[1], tile_origin_ijk[2]:tile_end_ijk[2], :] = output_tile_stack
-
-
-def dump_write(render_folder_name,
-               full_volume_shape,
-               dtype,
-               color_channel_count,
-               output_file_name,
-               tile_hash,
-               leaf_level_count,
-               tile_level_count,
-               compression_method,
-               compression_options,
-               output_file_type,
-               do_use_simple_for_loop=False):
-    # dumps volumetric data into h5/n5/zarr
-    #self.inputLoc = inputloc
-
-    tile_shape = (full_volume_shape / (2**tile_level_count)).astype(int)
-    leaf_shape = (full_volume_shape / (2**leaf_level_count)).astype(int)
-
-    # check if dataset name is provided
-    splitted_name = output_file_name.split(':')
-    if  len(splitted_name) == 1:
-        output_file_name =  splitted_name[0]
-        dataset_name =  "volume"
-    elif len(splitted_name) ==2:
-        output_file_name =  splitted_name[0]
-        dataset_name =  splitted_name[1]
-    else:
-        raise ValueError('output file name has more than one ":"', output_file_name)
-    #self.setting = setting
-    #self.tilelist = tilelist
-    tile_id_list = list(tile_hash.keys())
-    leaf_ids_per_tile_list = list(tile_hash.values())
-
-    # # Unpack the settings
-    # volSize = tuple(map(int,setting['volSize']))
-    # tileSize = setting['tileSize']
-    # #volReference = setting['volReference']
-    # depthFull = setting['depthFull']
-    # depthBase = setting['depthBase']
-    # leafSize = setting['leaf_shape']
-    # dtype = setting['dtype']
-    # chunkSize = tuple(map(int,setting['chunkSize']))
-    # compression_method = setting['compression']
-    # comp_opts = setting['compression_opts']
-    chunk_shape = tile_shape
-    full_volume_shape_including_color_channel = np.append(full_volume_shape, color_channel_count)  # append color channel
-    chunk_shape_including_color_channel = np.append(chunk_shape, color_channel_count)
-    full_volume_shape_with_color_channels_as_tuple = tuple(map(int, full_volume_shape_including_color_channel))
-    chunk_shape_with_color_as_tuple = tuple(map(int, chunk_shape_including_color_channel))
-
-    if output_file_type=='h5':
-        # write into h5
-        with h5py.File(output_file_name, "w") as f:
-            # dset_swc = f.create_dataset("reconstruction", (xyz_shifted.shape[0], 7), dtype='f')
-            # for iter, xyz_ in enumerate(xyz_shifted):
-            #     dset_swc[iter, :] = np.array(
-            #         [edges[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges[iter, 1].__int__()])
-            dataset = f.create_dataset(dataset_name,
-                                       full_volume_shape_with_color_channels_as_tuple,
-                                       dtype=dtype,
-                                       chunks=chunk_shape_with_color_as_tuple,
-                                       compression=compression_method,
-                                       compression_opts=compression_options)
+#             if is_dataset_transposed :
+#                 dataset[:, tile_origin_ijk[2]:tile_end_ijk[2], tile_origin_ijk[1]:tile_end_ijk[1], tile_origin_ijk[0]:tile_end_ijk[0]] = \
+#                     np.transpose(output_tile_stack)                
+#             else:
+#                 dataset[tile_origin_ijk[0]:tile_end_ijk[0], tile_origin_ijk[1]:tile_end_ijk[1], tile_origin_ijk[2]:tile_end_ijk[2], :] = \
+#                     output_tile_stack
 
 
-            # crop chuncks from a tile read in tilelist
-            for iter, tile_id in enumerate(tile_id_list):
-                print('{} : {} out of {}'.format(tile_id, iter+1, len(tile_id_list)))
-                leaf_id_within_tile = tile_hash[tile_id]
-                dump_single_tile_id(tile_id,
-                                    leaf_id_within_tile,
-                                    render_folder_name,
-                                    tile_shape,
-                                    leaf_shape,
-                                    chunk_shape_with_color_as_tuple,
-                                    dtype,
-                                    dataset)
-    elif output_file_type=='n5' or output_file_type=='zarr':
-        # write into z5 or n5
-        if do_use_simple_for_loop:
-            use_zarr_format = (output_file_type == 'zarr')
-            with z5py.File(output_file_name, 'a', use_zarr_format=use_zarr_format) as f:
-                dataset = f.require_dataset(dataset_name,
-                                            shape=full_volume_shape_with_color_channels_as_tuple,
-                                            dtype=dtype,
-                                            chunks=chunk_shape_with_color_as_tuple,
-                                            compression=compression_method,
-                                            **compression_options)
-                for tile_id in tqdm.tqdm(tile_id_list):
-                    leaf_ids_within_tile = tile_hash[tile_id]
-                    dump_single_tile_id(tile_id,
-                                        leaf_ids_within_tile,
-                                        render_folder_name,
-                                        tile_shape,
-                                        leaf_shape,
-                                        chunk_shape_with_color_as_tuple,
-                                        dtype,
-                                        dataset)
-        else:
-            username = getpass.getuser()
-            scratch_folder_path = '/scratch/%s' % username
-            with LSFCluster(cores=1, memory='15 GB', local_dir=scratch_folder_path, projectstr='mouselight', extralist='-o /dev/null -e /dev/null') as cluster:
-                cluster.adapt(minimum=1, maximum=1000)
-                #cluster = LocalCluster(n_workers=4, threads_per_worker=1)
-                #cluster.scale(1000)
-                with Client(cluster) as client:
-                    use_zarr_format = (output_file_type=='zarr')
-                    with z5py.File(output_file_name, 'a', use_zarr_format=use_zarr_format) as f:
-                        dataset = f.require_dataset(dataset_name,
-                                                   shape=full_volume_shape_with_color_channels_as_tuple,
-                                                   dtype=dtype,
-                                                   chunks=chunk_shape_with_color_as_tuple,
-                                                   compression=compression_method,
-                                                   **compression_options)
-                        two_arg_dump_single_tile_id = \
-                            partial(dump_single_tile_id,
-                                    rendered_folder_path=render_folder_name,
-                                    tile_shape=tile_shape,
-                                    leaf_shape=leaf_shape,
-                                    chunk_shape_with_color_as_tuple=chunk_shape_with_color_as_tuple,
-                                    dtype=dtype,
-                                    dataset=dataset)
-                        #with Pool(16) as pool :
-                        #    foo = list(tqdm.tqdm(pool.imap(f, tile_id_list), total=len(tile_id_list)))
-                        # for tile_id in tqdm.tqdm(tile_id_list):
-                        #     leaf_id_within_tile = tile_hash[tile_id]
-                        #     f(tile_id, leaf_id_within_tile)
+# def dump_write(render_folder_name,
+#                full_volume_shape,
+#                dtype,
+#                color_channel_count,
+#                output_file_name,
+#                tile_hash,
+#                leaf_level_count,
+#                tile_level_count,
+#                compression_method,
+#                compression_options,
+#                output_file_type,
+#                do_use_simple_for_loop=False):
+#     # dumps volumetric data into h5/n5/zarr
+#     #self.inputLoc = inputloc
 
-                        futures = client.map(two_arg_dump_single_tile_id, tile_id_list, leaf_ids_per_tile_list, retries=2)
-                        progress(futures)
+#     tile_shape = (full_volume_shape / (2**tile_level_count)).astype(int)
+#     leaf_shape = (full_volume_shape / (2**leaf_level_count)).astype(int)
 
-                        #for tile_id in tile_id_list:
-                        #    leaf_id_within_tile = tile_hash[tile_id]
-                        #    this_future = client.submit(f, tile_id, leaf_id_within_tile)
-                        #    fire_and_forget(this_future)
+#     # check if dataset name is provided
+#     splitted_name = output_file_name.split(':')
+#     if  len(splitted_name) == 1:
+#         output_file_name =  splitted_name[0]
+#         dataset_name =  "volume"
+#     elif len(splitted_name) ==2:
+#         output_file_name =  splitted_name[0]
+#         dataset_name =  splitted_name[1]
+#     else:
+#         raise ValueError('output file name has more than one ":"', output_file_name)
+#     #self.setting = setting
+#     #self.tilelist = tilelist
+#     tile_id_list = list(tile_hash.keys())
+#     leaf_ids_per_tile_list = list(tile_hash.values())
+
+#     # # Unpack the settings
+#     # volSize = tuple(map(int,setting['volSize']))
+#     # tileSize = setting['tileSize']
+#     # #volReference = setting['volReference']
+#     # depthFull = setting['depthFull']
+#     # depthBase = setting['depthBase']
+#     # leafSize = setting['leaf_shape']
+#     # dtype = setting['dtype']
+#     # chunkSize = tuple(map(int,setting['chunkSize']))
+#     # compression_method = setting['compression']
+#     # comp_opts = setting['compression_opts']
+#     chunk_shape = tile_shape
+#     full_volume_shape_including_color_channel = np.append(full_volume_shape, color_channel_count)  # append color channel
+#     chunk_shape_including_color_channel = np.append(chunk_shape, color_channel_count)
+#     full_volume_shape_with_color_channels_as_tuple = tuple(map(int, full_volume_shape_including_color_channel))
+#     chunk_shape_with_color_as_tuple = tuple(map(int, chunk_shape_including_color_channel))
+
+#     if output_file_type=='h5':
+#         # write into h5
+#         with h5py.File(output_file_name, "w") as f:
+#             # dset_swc = f.create_dataset("reconstruction", (xyz_shifted.shape[0], 7), dtype='f')
+#             # for iter, xyz_ in enumerate(xyz_shifted):
+#             #     dset_swc[iter, :] = np.array(
+#             #         [edges[iter, 0].__int__(), 1, xyz_[0], xyz_[1], xyz_[2], 1.0, edges[iter, 1].__int__()])
+#             dataset = f.create_dataset(dataset_name,
+#                                        full_volume_shape_with_color_channels_as_tuple,
+#                                        dtype=dtype,
+#                                        chunks=chunk_shape_with_color_as_tuple,
+#                                        compression=compression_method,
+#                                        compression_opts=compression_options)
+
+
+#             # crop chuncks from a tile read in tilelist
+#             for iter, tile_id in enumerate(tile_id_list):
+#                 print('{} : {} out of {}'.format(tile_id, iter+1, len(tile_id_list)))
+#                 leaf_id_within_tile = tile_hash[tile_id]
+#                 dump_single_tile_id(tile_id,
+#                                     leaf_id_within_tile,
+#                                     render_folder_name,
+#                                     tile_shape,
+#                                     leaf_shape,
+#                                     chunk_shape_with_color_as_tuple,
+#                                     dtype,
+#                                     dataset, 
+#                                     is_dataset_transposed=False)
+#     elif output_file_type=='n5' or output_file_type=='zarr':
+#         # write into z5 or n5
+#         if do_use_simple_for_loop:
+#             use_zarr_format = (output_file_type == 'zarr')
+#             with z5py.File(output_file_name, 'a', use_zarr_format=use_zarr_format) as f:
+#                 # require_dataset seems to choke on the compression_options {level: 9}, so this is a workaround
+#                 g = f.require_group('/')
+#                 try:
+#                     dataset = g[dataset_name]
+#                 except KeyError:
+#                     dataset = f.create_dataset(dataset_name,
+#                                                shape=tuple(reversed(full_volume_shape_with_color_channels_as_tuple)),
+#                                                dtype=dtype,
+#                                                chunks=tuple(reversed(chunk_shape_with_color_as_tuple)),
+#                                                compression=compression_method,
+#                                                **compression_options)                    
+#                 for tile_id in tqdm.tqdm(tile_id_list):
+#                     leaf_ids_within_tile = tile_hash[tile_id]
+#                     dump_single_tile_id(tile_id,
+#                                         leaf_ids_within_tile,
+#                                         render_folder_name,
+#                                         tile_shape,
+#                                         leaf_shape,
+#                                         chunk_shape_with_color_as_tuple,
+#                                         dtype,
+#                                         dataset,
+#                                         is_dataset_transposed=True)
+#         else:
+#             username = getpass.getuser()
+#             scratch_folder_path = '/scratch/%s' % username
+#             with LSFCluster(cores=1, memory='15 GB', local_dir=scratch_folder_path, projectstr='mouselight', queue='normal', extralist='-o /dev/null -e /dev/null') as cluster:
+#                 #cluster.adapt(minimum=1, maximum=1000)
+#                 #cluster = LocalCluster(n_workers=4, threads_per_worker=1)
+#                 cluster.scale(200)
+#                 with Client(cluster) as client:
+#                     use_zarr_format = (output_file_type=='zarr')
+#                     with z5py.File(output_file_name, 'a', use_zarr_format=use_zarr_format) as f:
+#                         # require_dataset seems to choke on the compression_options {level: 9}, so this is a workaround
+#                         g = f.require_group('/')
+#                         try:
+#                             dataset = g[dataset_name]
+#                         except KeyError:                        
+#                             dataset = f.create_dataset(dataset_name,
+#                                                        shape=tuple(reversed(full_volume_shape_with_color_channels_as_tuple)),
+#                                                        dtype=dtype,
+#                                                        chunks=tuple(reversed(chunk_shape_with_color_as_tuple)),
+#                                                        compression=compression_method,
+#                                                        **compression_options)
+#                         two_arg_dump_single_tile_id = \
+#                             partial(dump_single_tile_id,
+#                                     rendered_folder_path=render_folder_name,
+#                                     tile_shape=tile_shape,
+#                                     leaf_shape=leaf_shape,
+#                                     chunk_shape_with_color_as_tuple=chunk_shape_with_color_as_tuple,
+#                                     dtype=dtype,
+#                                     dataset=dataset,
+#                                     is_dataset_transposed=True)
+#                         #with Pool(16) as pool :
+#                         #    foo = list(tqdm.tqdm(pool.imap(f, tile_id_list), total=len(tile_id_list)))
+#                         # for tile_id in tqdm.tqdm(tile_id_list):
+#                         #     leaf_id_within_tile = tile_hash[tile_id]
+#                         #     f(tile_id, leaf_id_within_tile)
+#                         print('About to process %d tiles' % len(tile_id_list))
+#                         futures = client.map(two_arg_dump_single_tile_id, tile_id_list, leaf_ids_per_tile_list, retries=2)
+#                         progress(futures, notebook=False)  # need notebook=False when running in Spyder
+#                         wait(futures)  # just to make sure...
+#                         print('')
+#                         print('All Dask jobs have exited')
+#                         print('')
+#                         print('futures:')
+#                         print(futures)
+
+#                         #for tile_id in tile_id_list:
+#                         #    leaf_id_within_tile = tile_hash[tile_id]
+#                         #    this_future = client.submit(f, tile_id, leaf_id_within_tile)
+#                         #    fire_and_forget(this_future)
 
 
