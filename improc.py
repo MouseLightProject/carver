@@ -4,6 +4,8 @@ import re
 from collections import defaultdict
 import os
 from skimage import io
+import tqdm
+
 
 
 def boundingbox(xyz):
@@ -167,19 +169,24 @@ def loadTiles(tilepath,ext=".tif"):
     return np.stack(IM,axis=3)
 
 
-def grid2oct(xyz,depth):
-    # order flip to pre (inverse logic as oct2grid)
-    numlist = xyz.shape[0]
-    outijk = np.zeros((numlist, depth), dtype=np.int)
-    for il in range(numlist):
+
+def grid2oct(ijks, level_count):
+    # Converts an n x 3 array of chunk coordinates (in xyz order, each row a set of coordinates) to
+    # an n x level_count list of octree paths, as used for mouselight octrees.
+    chunk_count = ijks.shape[0]
+    zero_based_chunk_paths = np.zeros((chunk_count, level_count), dtype=np.int)
+    for il in range(chunk_count):
         arr = []
-        arr.append(to_base_2(xyz[il,2], depth))
-        arr.append(to_base_2(xyz[il,1], depth))
-        arr.append(to_base_2(xyz[il,0], depth))
-        for idx in range(depth):
+        arr.append(to_base_2(ijks[il, 2], level_count))
+        arr.append(to_base_2(ijks[il, 1], level_count))
+        arr.append(to_base_2(ijks[il, 0], level_count))
+        for idx in range(level_count):
             b = [el[idx] for el in arr]
-            outijk[il,idx]=np.int(''.join(b),2)
-    return(outijk+1)
+            zero_based_chunk_paths[il,idx]=np.int(''.join(b),2)
+    chunk_paths = zero_based_chunk_paths+1
+    return chunk_paths
+
+
 
 def chunklist(pathlist,depth):
     # -> for each tile, find bbox of crop sub-octtree
@@ -191,43 +198,74 @@ def chunklist(pathlist,depth):
 
     return listdict
 
-def dilateOct(octpath,width=1):
+
+
+def dilateOct(octpath, width=1):
     # dilates the octpath with the given search widty
     # 1/2/3 with width 1 -> 1/2/3 | 2/2/3 | 1/1/3 | 1/3/3 | ... | 2/3/4
     depth = octpath.shape[1]
-    #numpath = octpath.shape[0]
-    ix, iy, iz = np.mgrid[-width:width+1, -width:width+1, -width:width+1]
+    # numpath = octpath.shape[0]
+    ix, iy, iz = np.mgrid[-width:width + 1, -width:width + 1, -width:width + 1]
     ixyz = np.stack((ix.flatten(), iy.flatten(), iz.flatten()), axis=1)
     alltiles = []
     for ijk in octpath:
-        xyz = oct2grid(ijk.reshape(1,depth))
+        xyz = oct2grid(ijk.reshape(1, depth))
         # for every path, there are 26 neighbors
-        alltiles.append(xyz[None,:]+ixyz)
+        alltiles.append(xyz[None, :] + ixyz)
 
     if len(alltiles) == 1:
         alltiles = np.squeeze(alltiles[0])
     else:
         alltiles = np.squeeze(np.concatenate(alltiles, axis=1))
-        
+
     # delete any out of bound tiles
-    deletethese = np.any(np.logical_or(alltiles < 0, alltiles > 2**depth-1), axis=1)
-    alltiles = np.delete(alltiles,(np.where(deletethese)),axis=0)
+    deletethese = np.any(np.logical_or(alltiles < 0, alltiles > 2 ** depth - 1), axis=1)
+    alltiles = np.delete(alltiles, (np.where(deletethese)), axis=0)
 
     # unique entries
     alltiles_unique = np.unique(alltiles, axis=0)
-    
+
     # convert to octpaths
-    octlist = [grid2oct(tileid[None,:], depth) for tileid in alltiles_unique]
+    octlist = [grid2oct(tileid[None, :], depth) for tileid in alltiles_unique]
     octlist = np.concatenate(octlist, axis=0)
 
-    return octlist, alltiles_unique
+    return octlist
 
-# def boundingboxOctree(xyz,params):
-#     # finds the bounding box of point cloud wrto octree
-#
-#     x = xyz[]
-#     for idx in range(nlevel,0,-1):
-#         th = xyz
-#
-#
-#     return(np.round(np.array([np.min(xyz,axis=1),np.max(xyz,axis=1)])))
+
+
+def dilate_octree_chunk_set(octree_chunk_paths, radius):
+    # Given a list of paths to octree chunks, determines all the octree chunks within
+    # radius using city-block distance, and returns a list of these chunks.
+
+    # Get dimensions
+    path_count = octree_chunk_paths.shape[0]
+    level_count = octree_chunk_paths.shape[1]
+    chunk_stack_size = 2 ** level_count  # the stack of chunks is this x this x this
+
+    # Generate a list of offsets that constitute the neighborhood of a chunk
+    delta_i_grid, delta_j_grid, delta_k_grid = np.mgrid[-radius:radius + 1, -radius:radius + 1, -radius:radius + 1]
+    neighborhood_delta_ijks = np.stack((delta_i_grid.flatten(), delta_j_grid.flatten(), delta_k_grid.flatten()), axis=1)
+
+    # Mark all the chunks that will be included in the output list
+    is_chunk_marked = np.zeros((chunk_stack_size, chunk_stack_size, chunk_stack_size), dtype=bool)
+    for octree_chunk_path in tqdm.tqdm(octree_chunk_paths):
+        central_ijk = oct2grid(octree_chunk_path.reshape(1,level_count))
+        neighborhood_ijks = central_ijk + neighborhood_delta_ijks
+        #for neighborhood_ijk in neighborhood_ijks:
+        #    i = neighborhood_ijk[0]
+        #    j = neighborhood_ijk[1]
+        #    k = neighborhood_ijk[2]
+        #    if (0<=i) and (i<chunk_stack_size) and (0<=j) and (j<chunk_stack_size) and (0<=k) and (k<chunk_stack_size):
+        #        is_chunk_marked[i,j,k] = True
+        is_neighborhood_chunk_in_bounds = np.all(
+            np.logical_and(0 <= neighborhood_ijks, neighborhood_ijks < chunk_stack_size), axis=1)
+        in_bounds_neighborhood_ijks = neighborhood_ijks[is_neighborhood_chunk_in_bounds]
+        is_chunk_marked[tuple(np.transpose(in_bounds_neighborhood_ijks))] = True
+
+    # Find all the marked chunks, convert to chunk paths, and return
+    ijks_in_output = np.transpose(np.nonzero(is_chunk_marked))  # marked_chunk_count x 3
+    result = grid2oct(ijks_in_output, level_count)
+    return result
+# end
+
+

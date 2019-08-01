@@ -17,6 +17,7 @@ from dask.distributed import Client, LocalCluster
 from dask.distributed import wait
 from dask.distributed import progress
 import getpass
+import time
 
 
 
@@ -317,12 +318,22 @@ def crop_from_render(render_folder_name, input_swc_file_or_folder_name, output_f
         dilation_count = np.max( np.ceil(desired_carve_out_half_diagonal.astype(float) / leaf_shape.astype(float)) ).astype(int).item()
         # should be enough to get about a 512 vx cube around each swc centerpoint
         # (except 4x less in z, b/c axial rez is less)
-        octpath_dilated, junk = improc.dilateOct(octpath_cover, dilation_count)
-        #for dilation_index in range(dilation_count):
-        #    print('Finished dilation iteration %d of %d' % (dilation_index+1, dilation_count))
+        # t = time.time()
+        # octpath_dilated_old = improc.dilateOct(octpath_cover, dilation_count)
+        # elapsed = time.time() - t
+        # print('Elapsed time for old method: %g s' % elapsed)
+        t = time.time()
+        octpath_dilated = improc.dilate_octree_chunk_set(octpath_cover, dilation_count)
+        elapsed = time.time() - t
+        print('Elapsed time for new dilation method: %g s' % elapsed)
+        # if np.array_equal(octpath_dilated_old, octpath_dilated):
+        #     print('The two methods agree on octpath dilation result!  Hooray!')
+        # else:
+        #     raise RuntimeError('The two methods do not agree on octpath dilation result')
         print('Done with dilation!')
 
         tile_hash = improc.chunklist(octpath_dilated, tile_level_count) #1..8
+        os.makedirs(output_folder_name, exist_ok=True)
         pickle.dump(tile_hash, open(tile_list_pickle_file_path, 'wb'))
 
     #tileids = list(tile_hash.keys())
