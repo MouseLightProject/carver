@@ -301,7 +301,11 @@ def crop_from_render(render_folder_name, input_swc_file_or_folder_name, output_f
     try:
         tile_hash = pickle.load(open(tile_list_pickle_file_path, 'rb'))
         print('Loaded tile list from memo file')
+        did_load_tile_hash = True
     except (OSError,FileNotFoundError) :
+        did_load_tile_hash = False
+
+    if not did_load_tile_hash :
         octpath_cover = np.unique(octpath, axis=0)
         #gridlist_cover = improc.oct2grid(octpath_cover)
 
