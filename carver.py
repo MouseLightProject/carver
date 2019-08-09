@@ -37,3 +37,4 @@ output_folder_path = '/nrs/funke/mouselight-v2/%s' % (sample_date)
 navigator.main(['-i', rendered_sample_path,
                 '-s', swc_folder_path,
                 '-o', output_folder_path])
+ 
