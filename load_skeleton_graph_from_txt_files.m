@@ -2,6 +2,11 @@ function [G, subs] = load_skeleton_graph_from_txt_files(skeleton_folder_name, sa
     % sample_stack_shape is in xyz order.  This is the shape of the
     % rendered sample, at the highest resolution in the 'octree'.
 
+    % Verify the folder exists
+    if ~exist(skeleton_folder_name, 'file') ,
+        error('The skeletonization output folder %s does not exist', skeleton_folder_name) ;
+    end
+    
     folder_listing = dir(fullfile(skeleton_folder_name,'*.txt'));
     % check the format for a non zero file
     txt_file_names = {folder_listing.name} ;

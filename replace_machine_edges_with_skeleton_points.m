@@ -18,7 +18,7 @@ function consensus_neurons_augmented_with_skeleton_nodes = ...
     all_fragment_ijks_unrounded = (all_fragment_xyzs_in_erhan_coords - origin) ./ spacing + 0.5 ;  % these should be one-based ijks
     all_fragment_ijks = round(all_fragment_ijks_unrounded) ;  % these should be one-based ijks
     fragment_offsets = all_fragment_ijks_unrounded - all_fragment_ijks ;
-    assert( all( all( fragment_offsets < spacing/16 ) ) ) ;  % the offsets should just be floating-point error
+    assert( all( all( abs(fragment_offsets) < spacing/1024 ) ) ) ;  % the offsets should just be floating-point error
                               
     % Convert fragment coords to JaWS coords
     all_fragment_xyzs = jaws_origin + spacing .* (all_fragment_ijks-1) ;  % um, n x 3
