@@ -15,12 +15,16 @@ function consensus_neurons_augmented_with_skeleton_nodes = ...
                                   @()(read_all_fragment_centerpoints(fragments_folder_path))) ;
                               
     % Check that the fragment nodes are on the grid as we expect
+%     all_fragment_ijks_unrounded = (all_fragment_xyzs_in_erhan_coords - origin) ./ spacing + 0.5 ;  % these should be one-based ijks
+%     all_fragment_ijks = round(all_fragment_ijks_unrounded) ;  % these should be one-based ijks
+%     fragment_offsets = all_fragment_ijks_unrounded - all_fragment_ijks ;
+%     assert( all( all( abs(fragment_offsets) < spacing/1024 ) ) ) ;  % the offsets should just be floating-point error                              
+    fraction_of_fragment_nodes_at_voxel_centers = fraction_of_xyzs_at_voxel_centers_using_erhan_conventions(all_fragment_xyzs_in_erhan_coords, spacing, origin)
+    assert( fraction_of_fragment_nodes_at_voxel_centers == 1) ;
+    
+    % Convert fragment coords to JaWS coords
     all_fragment_ijks_unrounded = (all_fragment_xyzs_in_erhan_coords - origin) ./ spacing + 0.5 ;  % these should be one-based ijks
     all_fragment_ijks = round(all_fragment_ijks_unrounded) ;  % these should be one-based ijks
-    fragment_offsets = all_fragment_ijks_unrounded - all_fragment_ijks ;
-    assert( all( all( abs(fragment_offsets) < spacing/1024 ) ) ) ;  % the offsets should just be floating-point error
-                              
-    % Convert fragment coords to JaWS coords
     all_fragment_xyzs = jaws_origin + spacing .* (all_fragment_ijks-1) ;  % um, n x 3
     
     % Load in the consensus neurons                          
@@ -34,7 +38,10 @@ function consensus_neurons_augmented_with_skeleton_nodes = ...
     % This currently fails for 2018-07-02 consensus neurons!  It's true
     % that the vast majority of the nodes are on-grid, but some are not!
     % What the heck?!
-    %assert( are_all_nodes_in_all_neurons_on_jaws_grid(consensus_neurons, spacing, jaws_origin) ) ;
+    consensus_neuron_xyzs = xyzs_from_neuron_structs(consensus_neurons) ;
+%    assert( are_all_xyzs_at_voxel_centers(consensus_neuron_xyzs, spacing, jaws_origin) ) ;
+    fraction_of_consensus_nodes_at_voxel_centers = fraction_of_xyzs_at_voxel_centers_using_jaws_conventions(consensus_neuron_xyzs, spacing, jaws_origin)
+    %assert( fraction_of_consensus_nodes_at_voxel_centers == 1) ;
     
     % Label the consensus neuron nodes as being machine-generated or not
     consensus_neurons_with_machine_centerpoints_labelled = ...
@@ -53,6 +60,10 @@ function consensus_neurons_augmented_with_skeleton_nodes = ...
     skeleton_xyzs = jaws_origin + spacing .* (skeleton_ijks-1) ;  % um, n x 3
         % skeleton_ijks are 1-based, we want to map them to voxel centers
         % in JaWS coordinates
+        
+    % What fraction of fragment points are also skeleton points
+    is_fragment_a_skeleton_point = is_point_drawn_from_pool(all_fragment_xyzs, skeleton_xyzs, spacing) ;
+    fraction_fragment_points_that_are_skeleton_points = mean(is_fragment_a_skeleton_point)
         
     % Splice in skeleton nodes where possible
     consensus_neurons_augmented_with_skeleton_nodes = ...
