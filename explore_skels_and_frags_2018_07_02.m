@@ -28,8 +28,8 @@ fraction_of_fragment_nodes_at_voxel_centers = fraction_of_xyzs_at_voxel_centers_
 assert( fraction_of_fragment_nodes_at_voxel_centers == 1) ;
 
 % Convert fragment coords to JaWS coords
-%all_fragment_ijks_unrounded = (all_fragment_xyzs_in_erhan_coords - origin) ./ spacing + 0.5 ;  % these should be one-based ijks
-all_fragment_ijks_unrounded = (all_fragment_xyzs_in_erhan_coords - origin) ./ spacing + 1.5 ;  % seems like maybe this is correct?
+all_fragment_ijks_unrounded = (all_fragment_xyzs_in_erhan_coords - origin) ./ spacing + 0.5 ;  % these should be one-based ijks
+%all_fragment_ijks_unrounded = (all_fragment_xyzs_in_erhan_coords - origin) ./ spacing + 1.5 ;  % seems like maybe this is correct?
 all_fragment_ijks = round(all_fragment_ijks_unrounded) ;  % these should be one-based ijks
 all_fragment_xyzs = jaws_origin + spacing .* (all_fragment_ijks-1) ;  % um, n x 3
 
@@ -44,7 +44,7 @@ end
 
 % What fraction of fragment points are also skeleton points, looking at ijk
 % coords
-is_fragment_a_skeleton_point_from_ijk = is_point_drawn_from_pool(all_fragment_ijks+1, skeleton_ijks, [1 1 1]) ;
+is_fragment_a_skeleton_point_from_ijk = is_point_drawn_from_pool(all_fragment_ijks, skeleton_ijks, [1 1 1]) ;
 fraction_fragment_points_that_are_skeleton_points_from_ijk = mean(is_fragment_a_skeleton_point_from_ijk)
 
 
