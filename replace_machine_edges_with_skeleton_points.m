@@ -27,6 +27,40 @@ function consensus_neurons_augmented_with_skeleton_nodes = ...
     all_fragment_ijks = round(all_fragment_ijks_unrounded) ;  % these should be one-based ijks
     all_fragment_xyzs = jaws_origin + spacing .* (all_fragment_ijks-1) ;  % um, n x 3
     
+    % Get the skeleton graph, either from .txt files or from mat                              
+    graph_file_path = fullfile(output_folder_path, 'skeleton-as-graph.mat') ;
+    if exist(graph_file_path, 'file') ,
+        load(graph_file_path, 'skeleton_graph', 'skeleton_ijks') ;
+    else        
+        [skeleton_graph, skeleton_ijks] = load_skeleton_graph_from_txt_files(skeleton_folder_path, shape_xyz) ;  % these ijks are also one-based
+        save(graph_file_path, 'skeleton_graph','skeleton_ijks', '-v7.3') ;
+    end
+    skeleton_xyzs = jaws_origin + spacing .* (skeleton_ijks-1) ;  % um, n x 3
+        % skeleton_ijks are 1-based, we want to map them to voxel centers
+        % in JaWS coordinates
+        
+    % Write the skeleton to json file, for Will & Jan
+    graph_as_json_file_path = fullfile(output_folder_path, 'skeleton-as-graph.json') ;
+    if ~exist(graph_as_json_file_path, 'file') ,
+        json_ready_skeleton = struct() ;
+        json_ready_skeleton.ijks = skeleton_ijks-1 ;  % convert to zero-based indexing
+        edges_with_third_col = table2array(skeleton_graph.Edges)-1 ;  % convert to zero-based indexing        
+        json_ready_skeleton.edges = edges_with_third_col(:,1:2) ;
+        json_ready_skeleton.jaws_origin = jaws_origin ;
+        json_ready_skeleton.spacing = spacing ;
+        json_ready_skeleton.origin = origin ;
+        json_ready_skeleton.shape_xyz = shape_xyz ;        
+        json_ready_skeleton.xyz_from_ijk_formula = 'xyzs = jaws_origin + spacing .* ijks' ;        
+        json_text = jsonencode(json_ready_skeleton) ;
+        dump_string_to_file(graph_as_json_file_path, json_text) ;
+    end    
+        
+    % What fraction of fragment points are also skeleton points
+    is_fragment_a_skeleton_point = is_point_drawn_from_pool(all_fragment_xyzs, skeleton_xyzs, spacing) ;
+    fraction_fragment_points_that_are_skeleton_points = mean(is_fragment_a_skeleton_point)
+           
+    
+    
     % Load in the consensus neurons                          
     consensus_neurons_and_names = compute_or_read_from_memo(output_folder_path, ...
                                                             'consensus_neurons',  ...
@@ -49,22 +83,6 @@ function consensus_neurons_augmented_with_skeleton_nodes = ...
                                   'consensus_neurons_with_machine_centerpoints_labelled',  ...
                                   @()(label_machine_centerpoints_in_neurons(consensus_neurons, all_fragment_xyzs, spacing))) ;                                  
     
-    % Get the skeleton graph, either from .txt files or from mat                              
-    graph_file_path = fullfile(output_folder_path, 'skeleton-as-graph.mat') ;
-    if exist(graph_file_path, 'file') ,
-        load(graph_file_path, 'skeleton_graph', 'skeleton_ijks') ;
-    else        
-        [skeleton_graph, skeleton_ijks] = load_skeleton_graph_from_txt_files(skeleton_folder_path, shape_xyz) ;  % these ijks are also one-based
-        save(graph_file_path, 'skeleton_graph','skeleton_ijks', '-v7.3') ;
-    end
-    skeleton_xyzs = jaws_origin + spacing .* (skeleton_ijks-1) ;  % um, n x 3
-        % skeleton_ijks are 1-based, we want to map them to voxel centers
-        % in JaWS coordinates
-        
-    % What fraction of fragment points are also skeleton points
-    is_fragment_a_skeleton_point = is_point_drawn_from_pool(all_fragment_xyzs, skeleton_xyzs, spacing) ;
-    fraction_fragment_points_that_are_skeleton_points = mean(is_fragment_a_skeleton_point)
-        
     % Splice in skeleton nodes where possible
     consensus_neurons_augmented_with_skeleton_nodes = ...
         compute_or_read_from_memo(output_folder_path, ...
