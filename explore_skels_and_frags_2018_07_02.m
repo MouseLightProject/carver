@@ -47,26 +47,30 @@ end
 is_fragment_a_skeleton_point_from_ijk = is_point_drawn_from_pool(all_fragment_ijks, skeleton_ijks, [1 1 1]) ;
 fraction_fragment_points_that_are_skeleton_points_from_ijk = mean(is_fragment_a_skeleton_point_from_ijk)
 
+% What if you shift the fragment points by 1 in each dim?
+is_shifted_fragment_a_skeleton_point_from_ijk = is_point_drawn_from_pool(all_fragment_ijks+1, skeleton_ijks, [1 1 1]) ;
+fraction_shifted_fragment_points_that_are_skeleton_points_from_ijk = mean(is_shifted_fragment_a_skeleton_point_from_ijk)
+
 
 skeleton_xyzs = jaws_origin + spacing .* (skeleton_ijks-1) ;  % um, n x 3
     % skeleton_ijks are 1-based, we want to map them to voxel centers
     % in JaWS coordinates
 
-% Write the skeleton to json file, for Will & Jan
-graph_as_json_file_path = fullfile(output_folder_path, 'skeleton-as-graph.json') ;
-if ~exist(graph_as_json_file_path, 'file') ,
-    json_ready_skeleton = struct() ;
-    json_ready_skeleton.ijks = skeleton_ijks-1 ;  % convert to zero-based indexing
-    edges_with_third_col = table2array(skeleton_graph.Edges)-1 ;  % convert to zero-based indexing        
-    json_ready_skeleton.edges = edges_with_third_col(:,1:2) ;
-    json_ready_skeleton.jaws_origin = jaws_origin ;
-    json_ready_skeleton.spacing = spacing ;
-    json_ready_skeleton.origin = origin ;
-    json_ready_skeleton.shape_xyz = shape_xyz ;        
-    json_ready_skeleton.xyz_from_ijk_formula = 'xyzs = jaws_origin + spacing .* ijks' ;        
-    json_text = jsonencode(json_ready_skeleton) ;
-    dump_string_to_file(graph_as_json_file_path, json_text) ;
-end    
+% % Write the skeleton to json file, for Will & Jan
+% graph_as_json_file_path = fullfile(output_folder_path, 'skeleton-as-graph.json') ;
+% if ~exist(graph_as_json_file_path, 'file') ,
+%     json_ready_skeleton = struct() ;
+%     json_ready_skeleton.ijks = skeleton_ijks-1 ;  % convert to zero-based indexing
+%     edges_with_third_col = table2array(skeleton_graph.Edges)-1 ;  % convert to zero-based indexing        
+%     json_ready_skeleton.edges = edges_with_third_col(:,1:2) ;
+%     json_ready_skeleton.jaws_origin = jaws_origin ;
+%     json_ready_skeleton.spacing = spacing ;
+%     json_ready_skeleton.origin = origin ;
+%     json_ready_skeleton.shape_xyz = shape_xyz ;        
+%     json_ready_skeleton.xyz_from_ijk_formula = 'xyzs = jaws_origin + spacing .* ijks' ;        
+%     json_text = jsonencode(json_ready_skeleton) ;
+%     dump_string_to_file(graph_as_json_file_path, json_text) ;
+% end    
 
 % What fraction of fragment points are also skeleton points
 is_fragment_a_skeleton_point = is_point_drawn_from_pool(all_fragment_xyzs, skeleton_xyzs, spacing) ;
