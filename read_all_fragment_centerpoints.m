@@ -1,4 +1,7 @@
 function result = read_all_fragment_centerpoints(fragments_folder_path)
+    if ~exist(fragments_folder_path, 'file') ,
+        error('The folder %s does not exist', fragments_folder_path) ;
+    end       
     fragment_swc_template = fullfile(fragments_folder_path, '*.swc') ;
     fragment_file_names = simple_dir(fragment_swc_template) ;
     fragment_count = length(fragment_file_names)

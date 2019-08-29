@@ -3,6 +3,7 @@ this_file_path = mfilename('fullpath') ;
 this_folder_path = fileparts(this_file_path) ;
 %output_folder_path = sprintf('/groups/mousebrainmicro/mousebrainmicro/cluster/%s/carver', sample_date) ;
 output_folder_path = fullfile(this_folder_path, sample_date) ;
+trees_folder_path = sprintf('/nrs/mouselight/cluster/classifierOutputs/%s/build-brain-output/full', sample_date) ;  % these are .swcs for this sample
 fragments_folder_path = sprintf('/nrs/mouselight/cluster/classifierOutputs/%s/build-brain-output/frags-with-at-least-5-points', sample_date) ;
 consensus_swcs_folder_path = sprintf('/groups/mousebrainmicro/mousebrainmicro/shared_tracing/Finished_Neurons/%s', sample_date) ;
 sample_folder_path = sprintf('/nrs/mouselight/SAMPLES/%s', sample_date) ;
@@ -127,7 +128,7 @@ line(a, 'XData', 0, 'YData', 0, 'Marker', '.', 'MarkerSize', 12) ;
 title('Fragments') ;
 
 %%
-desired_sample_count = 100 ;
+desired_sample_count = 200 ;
 [sample_stacks, sample_radius] = sample_rendered_data(sample_folder_path, skeleton_ijks, desired_sample_count) ;
 mean_sample_stack = mean(sample_stacks, 4) ;
 mean_sample_stack_xy_slice = mean_sample_stack(:,:,sample_radius(3)+1) ;
@@ -139,9 +140,44 @@ axis tight
 line(a, 'XData', 0, 'YData', 0, 'Marker', '.', 'MarkerSize', 12) ;
 title('Skeleton') ;
 
+% sample_stack_xy_slices = squeeze(sample_stacks(:,:,sample_radius(3)+1,:)) ;
+% f = figure('Color', 'w') ;
+% a = axes(f, 'DataAspectRatio', [1 1 1]) ;
+% imagesc(a, sample_radius(1)*[-1 +1], sample_radius(1)*[-1 +1], sample_stack_xy_slices(:,:,60)) ;
+% axis equal
+% axis tight
+% line(a, 'XData', 0, 'YData', 0, 'Marker', '.', 'MarkerSize', 12) ;
+% title('Skeleton') ;
 
 
 
+%%
+% Load the tree points from disk                                                
+all_tree_xyzs_in_erhan_coords = ...
+    compute_or_read_from_memo(output_folder_path, ...
+                              'all_tree_xyzs_in_erhan_coords',  ...
+                              @()(read_all_fragment_centerpoints(trees_folder_path))) ;
+
+% Check that the tree nodes are on the grid as we expect
+%     all_tree_ijks_unrounded = (all_tree_xyzs_in_erhan_coords - origin) ./ spacing + 0.5 ;  % these should be one-based ijks
+%     all_tree_ijks = round(all_tree_ijks_unrounded) ;  % these should be one-based ijks
+%     tree_offsets = all_tree_ijks_unrounded - all_tree_ijks ;
+%     assert( all( all( abs(tree_offsets) < spacing/1024 ) ) ) ;  % the offsets should just be floating-point error                              
+fraction_of_tree_nodes_at_voxel_centers = fraction_of_xyzs_at_voxel_centers_using_erhan_conventions(all_tree_xyzs_in_erhan_coords, spacing, origin)
+
+% Convert tree coords to JaWS coords
+all_tree_ijks_unrounded = (all_tree_xyzs_in_erhan_coords - origin) ./ spacing + 0.5 ;  % these should be one-based ijks
+all_tree_ijks = round(all_tree_ijks_unrounded) ;  % these should be one-based ijks
+all_tree_xyzs = jaws_origin + spacing .* (all_tree_ijks-1) ;  % um, n x 3
+
+% What fraction of tree points are also skeleton points, looking at ijk
+% coords
+is_tree_a_skeleton_point_from_ijk = is_point_drawn_from_pool(all_tree_ijks, skeleton_ijks, [1 1 1]) ;
+fraction_tree_points_that_are_skeleton_points_from_ijk = mean(is_tree_a_skeleton_point_from_ijk)
+
+% What if you shift the tree points by 1 in each dim?
+is_shifted_tree_a_skeleton_point_from_ijk = is_point_drawn_from_pool(all_tree_ijks+1, skeleton_ijks, [1 1 1]) ;
+fraction_shifted_tree_points_that_are_skel_points_from_ijk = mean(is_shifted_tree_a_skeleton_point_from_ijk)
 
 
 
