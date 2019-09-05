@@ -1,4 +1,4 @@
-function result = label_machine_centerpoints_in_neurons(neurons, machine_centerpoints, spacing)
+function result = label_machine_centerpoints_in_neurons(neurons, neuron_names, machine_centerpoints, spacing)
     % neurons is a cell array, each element an centerpoint_count x 7 double array
     % Each row is an SWC-style record: id, type, x, y, z, something i forget,
     % and parent id.  The root has a parent id of -1, and parents come before
@@ -8,5 +8,11 @@ function result = label_machine_centerpoints_in_neurons(neurons, machine_centerp
     % y z triple
     
     kd_tree  = KDTreeSearcher(machine_centerpoints) ;        
-    result = cellfun(@(neuron)(label_machine_centerpoints_in_neuron(neuron, kd_tree, machine_centerpoints, spacing)), neurons, 'UniformOutput', false) ;
+    neuron_count = length(neurons) ;
+    result = cell(size(neurons)) ;
+    for neuron_index = 1:neuron_count ,
+        neuron = neurons{neuron_index} ;
+        neuron_name = neuron_names{neuron_index} ;        
+        result{neuron_index} = label_machine_centerpoints_in_neuron(neuron, neuron_name, kd_tree, machine_centerpoints, spacing) ;
+    end
 end

@@ -10,6 +10,6 @@ function result = is_point_drawn_from_pool(test_points, pool_points, spacing)
     normed_offset_to_nearest_pool_point = offset_to_nearest_pool_point ./ spacing ;
     absolute_normed_offset_to_nearest_pool_point = abs(normed_offset_to_nearest_pool_point) ;
     max_absolute_normed_offset_to_nearest_pool_point = max(absolute_normed_offset_to_nearest_pool_point, [], 2) ;
-    normed_offset_threshold = 1/2 ;
+    normed_offset_threshold = 1/1000 ;
     result = (max_absolute_normed_offset_to_nearest_pool_point < normed_offset_threshold) ;
 end

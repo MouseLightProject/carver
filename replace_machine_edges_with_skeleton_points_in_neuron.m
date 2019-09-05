@@ -1,4 +1,4 @@
-function result = replace_machine_edges_with_skeleton_points_in_neuron(neuron, skeleton_graph, skeleton_kd_tree, skeleton_xyzs, spacing)
+function result = replace_machine_edges_with_skeleton_points_in_neuron(neuron, neuron_name, skeleton_graph, skeleton_kd_tree, skeleton_xyzs, spacing)
     xyz_from_node_id = neuron(:,3:5) ;
     is_a_machine_point_from_node_id = (neuron(:,2)==43) ;
     parent_node_id_from_node_id = neuron(:, end) ;
@@ -26,6 +26,9 @@ function result = replace_machine_edges_with_skeleton_points_in_neuron(neuron, s
     is_self_and_parent_both_machine_and_skeleton_from_node_id = ...
         is_self_and_parent_a_machine_point_from_node_id & is_self_and_parent_a_skeleton_point_from_node_id ;
     
+%     if isequal(neuron_name, 'G-002') ,
+%         fprintf('here!\n') ;
+%     end
     node_ids_to_replace = find(is_self_and_parent_both_machine_and_skeleton_from_node_id) ;
     %A_skeleton_graph = skeleton_graph.adjacency ;
     node_ids_to_replace_count = length(node_ids_to_replace) ;
