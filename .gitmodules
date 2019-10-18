@@ -1,3 +1,6 @@
 [submodule "morphsnakes"]
 	path = morphsnakes
 	url = https://github.com/pmneila/morphsnakes.git
+[submodule "tmt"]
+	path = tmt
+	url = https://github.com/JaneliaSciComp/tmt

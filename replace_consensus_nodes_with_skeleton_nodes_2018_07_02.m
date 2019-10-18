@@ -5,7 +5,7 @@ sample_date = '2018-07-02' ;
 this_file_path = mfilename('fullpath') ;
 this_folder_path = fileparts(this_file_path) ;
 %output_folder_path = sprintf('/groups/mousebrainmicro/mousebrainmicro/cluster/%s/carver', sample_date) ;
-output_folder_path = fullfile(this_folder_path, sprintf('%s-v03', sample_date)) ;
+output_folder_path = fullfile(this_folder_path, sprintf('%s-v04', sample_date)) ;
 %fragments_folder_path = sprintf('/groups/mousebrainmicro/mousebrainmicro/cluster/Reconstructions/%s/prob0_swcs/frags', sample_date) ;
 consensus_swcs_folder_path = sprintf('/groups/mousebrainmicro/mousebrainmicro/shared_tracing/Finished_Neurons/%s', sample_date) ;
 sample_folder_path = sprintf('/nrs/mouselight/SAMPLES/%s', sample_date) ;
@@ -105,7 +105,7 @@ consensus_neuron_names = consensus_neurons_and_names.consensus_neuron_names ;
 % Should investigate at some point
 consensus_neuron_xyzs = xyzs_from_neuron_structs(consensus_neurons_as_swc_arrays) ;
 %    assert( are_all_xyzs_at_voxel_centers(consensus_neuron_xyzs, spacing, jaws_origin) ) ;
-fraction_of_consensus_nodes_at_voxel_centers = fraction_of_xyzs_at_voxel_centers_using_jaws_conventions(consensus_neuron_xyzs, spacing, jaws_origin)
+fraction_of_consensus_nodes_at_voxel_centers = fraction_of_xyzs_at_voxel_centers_using_jaws_conventions(consensus_neuron_xyzs, spacing, jaws_origin) %#ok<NOPTS>
 %assert( fraction_of_consensus_nodes_at_voxel_centers == 1) ;
 
 % % What fraction of the consensus nodes are fragment nodes for the uncorrected
@@ -124,6 +124,11 @@ fraction_of_consensus_nodes_at_voxel_centers = fraction_of_xyzs_at_voxel_centers
 %                               'consensus_neurons_with_machine_centerpoints_labelled',  ...
 %                               @()(label_machine_centerpoints_in_neurons(consensus_neurons, consensus_neuron_names, all_fragment_xyzs, spacing))) ;                                  
 
+% % Get out the neuron we want
+% is_match = strcmp(consensus_neuron_names, 'G-121') ;
+% consensus_neurons_as_swc_arrays = consensus_neurons_as_swc_arrays(is_match) ;
+% consensus_neuron_names = consensus_neuron_names(is_match) ;
+
 %%                          
 % Splice in skeleton nodes where possible
 consensus_neurons_augmented_with_skeleton_nodes = ...
@@ -134,7 +139,7 @@ consensus_neurons_augmented_with_skeleton_nodes = ...
                                                                                          skeleton_graph, ...
                                                                                          skeleton_xyzs, ...
                                                                                          spacing))) ;                                  
-                                                                                    
+
 %%
 % Write the swc's that don't exist already                          
 consensus_neuron_count = length(consensus_neurons_as_swc_arrays) ;
@@ -147,7 +152,31 @@ for i = 1:consensus_neuron_count ,
     swc_file_name = sprintf('%s.swc', consensus_neuron_name) ;
     swc_file_path = fullfile(swc_folder_path, swc_file_name) ;
     if ~exist(swc_file_path, 'file') ,
-        save_swc(swc_file_path, consensus_neurons_augmented_with_skeleton_nodes{i}, consensus_neuron_name) ;
+        save_swc(swc_file_path, consensus_neurons_augmented_with_skeleton_nodes{i}.refined_neuron_as_swc_array, consensus_neuron_name) ;
     end
 end
-                                       
+                                      
+%%
+% Summary statistics of how many consensus edges were refined
+fraction_edges_refinable_per_neuron = cellfun(@(s)(mean(s.was_edge_to_parent_periskeleton_at_both_ends(2:end))), ...
+                                              consensus_neurons_augmented_with_skeleton_nodes) ;
+fraction_edges_refined_per_neuron = cellfun(@(s)(mean(s.was_edge_to_parent_refined_from_old_node_id(2:end))), ...
+                                            consensus_neurons_augmented_with_skeleton_nodes) ;
+
+consensus_neuron_index = cellfun(@(name)(str2double(name(3:end))), consensus_neuron_names) ;                                        
+
+f = figure('color', 'w') ;
+bar(consensus_neuron_index, fraction_edges_refinable_per_neuron, 'r') ;
+ylim([0 1]) ;
+ylabel('Fraction edges refined') ;
+xlabel('Consensus neuron index') ;
+hold on;
+bar(consensus_neuron_index, fraction_edges_refined_per_neuron, 'b') ;
+hold off;
+legend('Refinable', 'Refined') ;
+%set(gca,'XTickLabels', consensus_neuron_names) ;
+f.Name = 'refined-edges' ;
+set_figure_to_wysiwyg_printing(f) ;
+print_pdf(f) ;
+
+

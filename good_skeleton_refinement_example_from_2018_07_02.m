@@ -1,17 +1,90 @@
+close all
+clear
+
 sample_date = '2018-07-02' ;
 this_file_path = mfilename('fullpath') ;
 this_folder_path = fileparts(this_file_path) ;
 %output_folder_path = sprintf('/groups/mousebrainmicro/mousebrainmicro/cluster/%s/carver', sample_date) ;
-output_folder_path = fullfile(this_folder_path, sample_date) ;
+output_folder_path = fullfile(this_folder_path, sprintf('%s-v03', sample_date)) ;
 fragments_folder_path = sprintf('/groups/mousebrainmicro/mousebrainmicro/cluster/Reconstructions/%s/prob0_swcs/frags', sample_date) ;
 consensus_swcs_folder_path = sprintf('/groups/mousebrainmicro/mousebrainmicro/shared_tracing/Finished_Neurons/%s', sample_date) ;
 sample_folder_path = sprintf('/nrs/mouselight/SAMPLES/%s', sample_date) ;
 skeleton_folder_path =  sprintf('/groups/mousebrainmicro/mousebrainmicro/cluster/Reconstructions/%s/skeletonization', sample_date) ;
-
+xyz_of_interest = [78607.5, 19303.7, 31703.7] ;  % um, JAWS coords
 
 
 % Get the metadata for the rendered sample
 [shape_xyz, origin, spacing, jaws_origin] = load_sample_shape_origin_and_spacing(sample_folder_path);
+
+% Load the consensus neuron
+consensus_swc_path = '/groups/mousebrainmicro/mousebrainmicro/shared_tracing/Finished_Neurons/2018-07-02/G-002/consensus/2018-07-02_G-002_consensus.swc' ;
+consensus_neuron_as_swc_array = load_swc(consensus_swc_path) ;
+consensus_xyzs = consensus_neuron_as_swc_array(:,3:5) ;
+
+% Extract a stretch of consensus
+[min_dist, i_min_dist] = min(sqrt(sum((consensus_xyzs-xyz_of_interest).^2, 2)))
+nearby_consensus_xyzs = consensus_xyzs(i_min_dist-5:i_min_dist+5,:) ;
+
+% Load the refined swc
+refined_swc_path = '/groups/mousebrainmicro/mousebrainmicro/scripts/carver/2018-07-02-v03/augmented-with-skeleton-nodes-as-swcs/G-002.swc' ;
+refined_neuron_as_swc_array = load_swc(refined_swc_path) ;
+refined_xyzs = refined_neuron_as_swc_array(:,3:5) ;
+
+% Extract a stretch of refined
+[min_dist, i_min_dist] = min(sqrt(sum((refined_xyzs-xyz_of_interest).^2, 2)))
+nearby_refined_xyzs = refined_xyzs(i_min_dist-100:i_min_dist+100,:) ;
+
+
+
+ijk1_of_interest = round((xyz_of_interest - jaws_origin) ./ spacing) + 1 ;
+sample_shape = [64 80 6] ;
+sample_offset_ijk1 = ijk1_of_interest - round(sample_shape/2) ;
+sample_stack = get_mouselight_rendered_substack(sample_folder_path, 0, sample_offset_ijk1, sample_shape) ;
+sample_stack_mip = max(sample_stack, [], 3) ;
+
+sample_high_corner_ijk1 = sample_offset_ijk1 + sample_shape - 1 ;
+sample_offset_xyz = jaws_xyz_from_ijk1(sample_offset_ijk1, jaws_origin, spacing) ;
+sample_high_corner_xyz = jaws_xyz_from_ijk1(sample_high_corner_ijk1, jaws_origin, spacing) ;
+
+f = figure('Color', 'w') ;
+a = axes(f, 'DataAspectRatio', [1 1 1]) ;
+imagesc(a, ...
+        [sample_offset_xyz(1) sample_high_corner_xyz(1)], ...
+        [sample_offset_xyz(2) sample_high_corner_xyz(2)], ...
+        sample_stack_mip) ;
+f.Colormap = green(256) ;    
+a.DataAspectRatio = [1 1 1] ;
+xlim([sample_offset_xyz(1)-spacing(1)/2 sample_high_corner_xyz(1)+spacing(1)/2]) ;
+ylim([sample_offset_xyz(2)-spacing(2)/2 sample_high_corner_xyz(2)+spacing(2)/2]) ;
+a.XTick = [] ;
+a.YTick = [] ;
+
+consensus_line = line_in_3d_bang(a, nearby_consensus_xyzs, 'Marker', '.', 'MarkerSize', 3*6, 'Color', 'r') ;
+refined_line = line_in_3d_bang(a, nearby_refined_xyzs, 'Marker', '.', 'MarkerSize', 3*6, 'Color', [0 0.5 1]) ;
+
+set_figure_size([8 9]) ;
+set_figure_to_wysiwyg_printing(f) ;
+f.Name = 'example-refinement' ;
+print_pdf(f) ;
+
+
+% Check the alignment of refined neuron xyz points with the imagery
+%%
+refined_ijk1s = ijk1_from_jaws_xyz(refined_xyzs, jaws_origin, spacing) ;
+desired_sample_count = 100 ;
+[sample_stacks, sample_radius] = sample_rendered_data(sample_folder_path, refined_ijk1s, desired_sample_count) ;
+mean_sample_stack = mean(sample_stacks, 4) ;
+mean_sample_stack_xy_slice = mean_sample_stack(:,:,sample_radius(3)+1) ;
+f = figure('Color', 'w') ;
+a = axes(f, 'DataAspectRatio', [1 1 1]) ;
+imagesc(a, sample_radius(1)*[-1 +1], sample_radius(1)*[-1 +1], mean_sample_stack_xy_slice) ;
+axis equal
+axis tight
+line(a, 'XData', 0, 'YData', 0, 'Marker', '.', 'MarkerSize', 12) ;
+title('Refined points') ;
+
+
+
 
 
 

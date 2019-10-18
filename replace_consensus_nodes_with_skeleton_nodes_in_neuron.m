@@ -1,9 +1,10 @@
-function result = replace_consensus_nodes_with_skeleton_nodes_in_neuron(consensus_neuron_as_swc_array, ...
-                                                                        consensus_neuron_name, ...
-                                                                        skeleton_graph, ...
-                                                                        skeleton_kd_tree, ...
-                                                                        skeleton_xyzs, ...
-                                                                        spacing)
+function result = ...
+        replace_consensus_nodes_with_skeleton_nodes_in_neuron(consensus_neuron_as_swc_array, ...
+                                                              consensus_neuron_name, ...
+                                                              skeleton_graph, ...
+                                                              skeleton_kd_tree, ...
+                                                              skeleton_xyzs, ...
+                                                              spacing)
     xyz_from_node_id = consensus_neuron_as_swc_array(:,3:5) ;
     parent_node_id_from_node_id = consensus_neuron_as_swc_array(:, end) ;
     if ~isempty(parent_node_id_from_node_id) ,
@@ -35,10 +36,12 @@ function result = replace_consensus_nodes_with_skeleton_nodes_in_neuron(consensu
 %     if isequal(neuron_name, 'G-002') ,
 %         fprintf('here!\n') ;
 %     end
-    node_ids_to_replace = find(is_self_and_parent_a_periskeleton_point_from_node_id) ;
+    is_edge_to_parent_eligible_for_replacement_from_node_id = is_self_and_parent_a_periskeleton_point_from_node_id ;
+    node_ids_to_replace = find(is_edge_to_parent_eligible_for_replacement_from_node_id) ;
     %A_skeleton_graph = skeleton_graph.adjacency ;
     node_ids_to_replace_count = length(node_ids_to_replace) ;
     is_a_skeleton_point_from_node_id = false(size(parent_node_id_from_node_id)) ;
+    was_edge_to_parent_refined_from_old_node_id = false(size(parent_node_id_from_node_id)) ;
     progress_bar('reset') ;
     for i = 1 : node_ids_to_replace_count ,
         node_id = node_ids_to_replace(i) ;
@@ -59,6 +62,7 @@ function result = replace_consensus_nodes_with_skeleton_nodes_in_neuron(consensu
         %assert( isequal(skeleton_path, skeleton_path_2) ) ;
         
         if did_find_skeleton_path ,
+            was_edge_to_parent_refined_from_old_node_id(node_id) = true ;
             xyz_from_node_id(node_id,:) = skeleton_xyzs(skeleton_node_id, :) ;  
                 % substitute the skeleton node for the node (although the skeleton node will
                 % often be identical)
@@ -88,8 +92,13 @@ function result = replace_consensus_nodes_with_skeleton_nodes_in_neuron(consensu
     % Put stuff together into a neuron_swc_array
     result_node_count = length(parent_node_id_from_node_id) ;
     parent_node_id_from_node_id(1) = -1 ;  % use .swc convention for parent of the root node
-    unsorted_result = [ (1:result_node_count)' 42+is_a_skeleton_point_from_node_id xyz_from_node_id ones(result_node_count,1) parent_node_id_from_node_id ] ;
+    unsorted_refined_neuron_as_swc_array = [ (1:result_node_count)' 42+is_a_skeleton_point_from_node_id xyz_from_node_id ones(result_node_count,1) parent_node_id_from_node_id ] ;
     
     % Do a topological sort on that, so parents always come before children
-    result = sort_neuron_topologically(unsorted_result) ;
+    refined_neuron_as_swc_array = sort_neuron_topologically(unsorted_refined_neuron_as_swc_array) ;    
+    
+    result = struct() ;
+    result.refined_neuron_as_swc_array = refined_neuron_as_swc_array ;
+    result.was_edge_to_parent_periskeleton_at_both_ends = is_edge_to_parent_eligible_for_replacement_from_node_id ;
+    result.was_edge_to_parent_refined_from_old_node_id = was_edge_to_parent_refined_from_old_node_id ;
 end
