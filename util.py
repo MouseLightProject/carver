@@ -124,6 +124,28 @@ def appendSWCfolder(swcfolder, scale=1.0):
     return nm_, edges_, R_
 
 
+def collect_nodes_from_tracing_complete_folder(folder_name):
+    # Get names of files and folders
+    folder_entries = os.listdir(folder_name)
+
+    # only want folder entries of the form G-%03d
+    neuron_names = [entry for entry in folder_entries if entry.startswith('G-') and len(entry)==5]
+
+    #xyzs = ([] for i in range(1))
+    xyzs = []
+    for neuron_name in neuron_names:
+        #xyz_this, edges_, R_, offset_, scale_, header_, junk = readSWC(swcfile=os.path.join(folder_name, iswc_name))
+        xyzs_this = readSWC(os.path.join(folder_name, neuron_name, 'consensus.swc'))[0]
+        xyzs.append(xyzs_this)
+        xyzs_this = readSWC(os.path.join(folder_name, neuron_name, 'dendrite.swc'))[0]
+        xyzs.append(xyzs_this)
+
+    # Make the list of lists into a single list
+    xyzs_stacked = np.vstack(xyzs)
+    
+    return xyzs_stacked
+
+
 # ORIGINAL_SOURCE Janelia Workstation Large Volume Viewer
 # OFFSET 66310.961575 46976.514329 18608.718278
 # COLOR 1.000000,0.200000,0.200000
